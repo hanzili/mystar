@@ -1,35 +1,37 @@
-import React, { useEffect, useState } from 'react'
-import { Box, Heading, VStack, Text, useColorModeValue } from '@chakra-ui/react'
-import { useUser } from '@clerk/clerk-react'
-import { getTarotReadings, getSupabaseUserId, TarotReading } from '../lib/supabase'
-import PredictionResult from '../components/PredictionResult'
+// src/routes/history.tsx
+import { useEffect, useState } from 'react';
+import { Box, Heading, VStack, Text, useColorModeValue } from '@chakra-ui/react';
+import { useUser } from '@clerk/clerk-react';
+import { getTarotReadings, getSupabaseUserId } from '../lib/supabase';
+import { TarotReading } from '../lib/types';
+import PastReadingsList from '../components/PastReadingsList';
 
 export default function History() {
-  const { user } = useUser()
-  const [pastReadings, setPastReadings] = useState<TarotReading[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { user } = useUser();
+  const [pastReadings, setPastReadings] = useState<TarotReading[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchReadings = async () => {
       if (user) {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
-          const supabaseUserId = await getSupabaseUserId(user.id)
+          const supabaseUserId = await getSupabaseUserId(user.id);
           if (supabaseUserId) {
-            const readings = await getTarotReadings(supabaseUserId)
-            setPastReadings(readings)
+            const readings = await getTarotReadings(supabaseUserId);
+            setPastReadings(readings);
           } else {
-            console.error('Supabase user ID not found')
+            console.error('Supabase user ID not found');
           }
         } catch (error) {
-          console.error('Failed to fetch readings:', error)
+          console.error('Failed to fetch readings:', error);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       }
-    }
-    fetchReadings()
-  }, [user])
+    };
+    fetchReadings();
+  }, [user]);
 
   return (
     <VStack spacing={8} align="stretch">
@@ -40,11 +42,11 @@ export default function History() {
         {isLoading ? (
           <Text textAlign="center">Loading your past readings...</Text>
         ) : pastReadings.length > 0 ? (
-          <PredictionResult prediction="" pastReadings={pastReadings} />
+          <PastReadingsList pastReadings={pastReadings} />
         ) : (
           <Text textAlign="center">You haven't had any readings yet. Start a new reading to see your history!</Text>
         )}
       </Box>
     </VStack>
-  )
+  );
 }

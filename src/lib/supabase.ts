@@ -1,34 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
+import { User, TarotReading, ChatMessage } from './types';
 
+// Constants
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Supabase client initialization
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-export interface User {
-  id: string;
-  clerk_user_id: string;
-  email: string;
-}
-
-export interface TarotReading {
-  id?: string;
-  user_id: string;
-  question: string;
-  cards: string;
-  prediction: string;
-  created_at?: string;
-}
-
-export interface ChatMessage {
-  id?: string;
-  user_id: string;
-  prediction_id: string;
-  message: string;
-  is_ai_response: boolean;
-  created_at?: string;
-}
-
+// User-related functions
 export async function getOrCreateUser(clerkUserId: string, email: string): Promise<User> {
   const { data: existingUser, error: fetchError } = await supabase
     .from('users')
@@ -59,6 +39,22 @@ export async function getOrCreateUser(clerkUserId: string, email: string): Promi
   return newUser as User;
 }
 
+export async function getSupabaseUserId(clerkUserId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('users')
+    .select('id')
+    .eq('clerk_user_id', clerkUserId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching Supabase user ID:', error);
+    return null;
+  }
+
+  return data?.id || null;
+}
+
+// Tarot reading-related functions
 export async function saveTarotReading(reading: Omit<TarotReading, 'id' | 'created_at'>): Promise<TarotReading> {
   const { data, error } = await supabase
     .from('tarot_readings')
@@ -92,21 +88,7 @@ export async function getTarotReadings(userId: string): Promise<TarotReading[]> 
   return data as TarotReading[];
 }
 
-export async function getSupabaseUserId(clerkUserId: string): Promise<string | null> {
-  const { data, error } = await supabase
-    .from('users')
-    .select('id')
-    .eq('clerk_user_id', clerkUserId)
-    .single();
-
-  if (error) {
-    console.error('Error fetching Supabase user ID:', error);
-    return null;
-  }
-
-  return data?.id || null;
-}
-
+// Chat message-related functions
 export async function saveChatMessage(message: Omit<ChatMessage, 'id' | 'created_at'>): Promise<ChatMessage> {
   const { data, error } = await supabase
     .from('chat_messages')

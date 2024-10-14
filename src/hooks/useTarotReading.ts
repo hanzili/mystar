@@ -5,14 +5,11 @@ import {
   saveTarotReading,
   getTarotReadings,
   getOrCreateUser,
-  TarotReading,
-  User,
 } from '../lib/supabase';
 import { generateTarotPrediction } from '../lib/api';
-interface SelectedCard {
-  name: string;
-  isReversed: boolean;
-}
+import { TarotReading, User } from '../lib/types';
+import { SelectedCard } from '../lib/types';
+
 
 export const useTarotReading = () => {
   const { user } = useUser();
@@ -122,6 +119,14 @@ export const useTarotReading = () => {
     }
   };
 
+  // New function to reset the reading process
+  const resetReading = () => {
+    setQuestion('');
+    setSelectedCards([]);
+    setPrediction('');
+    setPredictionId('');
+  };
+
   return {
     predictionId,
     question,
@@ -131,5 +136,6 @@ export const useTarotReading = () => {
     pastReadings,
     handleQuestionSubmit,
     handleCardSelection,
+    resetReading, // Return the reset function
   };
 };

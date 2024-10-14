@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Input, VStack, useColorModeValue } from '@chakra-ui/react';
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
 interface QuestionFormProps {
   onSubmit: (question: string) => void;
 }
 
 const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
-  const [question, setQuestion] = useState('');
-  const labelColor = useColorModeValue('purple.600', 'purple.300')
-  const inputBg = useColorModeValue('white', 'gray.700')
-  const inputColor = useColorModeValue('gray.800', 'white')
-  const inputBorderColor = useColorModeValue('purple.300', 'purple.500')
+  const [question, setQuestion] = useState("");
+  const labelColor = useColorModeValue("purple.600", "purple.300");
+  const inputBg = useColorModeValue("white", "gray.700");
+  const inputColor = useColorModeValue("gray.800", "white");
+  const inputBorderColor = useColorModeValue("purple.300", "purple.500");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +43,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
             bg={inputBg}
             color={inputColor}
             borderColor={inputBorderColor}
-            _hover={{ borderColor: 'purple.400' }}
-            _focus={{ borderColor: 'purple.500', boxShadow: '0 0 0 1px purple.500' }}
+            _hover={{ borderColor: "purple.400" }}
+            _focus={{
+              borderColor: "purple.500",
+              boxShadow: "0 0 0 1px purple.500",
+            }}
           />
         </FormControl>
         <Button
@@ -44,7 +55,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
           colorScheme="purple"
           size="lg"
           width="full"
-          _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+          _hover={{ transform: "translateY(-2px)", boxShadow: "lg" }}
           transition="all 0.2s"
         >
           Ask the Tarot
