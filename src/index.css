@@ -14,6 +14,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23805ad5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>') 12 12, auto;
 }
 
 .app-container {
@@ -85,4 +86,22 @@ body {
   transform: rotate(180deg);
 }
 
-/* Add more styles for QuestionForm, CardSelection, LoadingAnimation, and PredictionResult components as needed */
+/* Magic wand trail effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #fbd38d 10%, transparent 10%);
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  transition: opacity 0.3s;
+  opacity: 0;
+}
+
+body:active::after {
+  opacity: 0.7;
+}

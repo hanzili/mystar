@@ -18,6 +18,10 @@ export default function Root() {
     }
   }, [isLoaded, isSignedIn, navigate])
 
+  const handleNewReading = () => {
+    navigate({ to: '/prediction' })
+  }
+
   return (
     <Box minHeight="100vh" bg={bgColor} color={textColor}>
       <Flex as="header" align="center" justify="space-between" wrap="wrap" padding="1.5rem" bg={headerBg} boxShadow="sm">
@@ -30,9 +34,9 @@ export default function Root() {
         <Spacer />
         {isSignedIn ? (
           <Flex align="center">
-            <Link to="/prediction" style={{ marginRight: '1rem' }}>
-              <Button colorScheme="purple" variant="ghost">New Reading</Button>
-            </Link>
+            <Button colorScheme="purple" variant="ghost" onClick={handleNewReading} mr={4}>
+              New Reading
+            </Button>
             <Link to="/history" style={{ marginRight: '1rem' }}>
               <Button colorScheme="purple" variant="ghost">History</Button>
             </Link>

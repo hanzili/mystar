@@ -8,7 +8,7 @@ import {
   TarotReading,
   User,
 } from '../lib/supabase';
-
+import { generateTarotPrediction } from '../lib/api';
 interface SelectedCard {
   name: string;
   isReversed: boolean;
@@ -19,6 +19,7 @@ export const useTarotReading = () => {
   const [question, setQuestion] = useState('');
   const [selectedCards, setSelectedCards] = useState<SelectedCard[]>([]);
   const [prediction, setPrediction] = useState('');
+  const [predictionId, setPredictionId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pastReadings, setPastReadings] = useState<TarotReading[]>([]);
   const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
@@ -81,36 +82,20 @@ export const useTarotReading = () => {
         .map((card) => `${card.name}${card.isReversed ? ' (Reversed)' : ''}`)
         .join(', ');
 
-      const response = await fetch(
-        'https://didojidulfoxymrtnesc.supabase.co/functions/v1/generate-tarot-prediction',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({ question, cards: cardDescriptions, userId: supabaseUser.id }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to generate prediction');
-      }
-
-      const data = await response.json();
-      const generatedPrediction = data.prediction;
+      const generatedPrediction = await generateTarotPrediction(question, cardDescriptions, supabaseUser.id);
 
       if (!generatedPrediction) {
         throw new Error('No prediction received');
       }
 
       setPrediction(generatedPrediction);
-      await saveTarotReading({
+      const reading = await saveTarotReading({
         user_id: supabaseUser.id,
         question,
         cards: cardDescriptions,
         prediction: generatedPrediction,
       });
+      setPredictionId(reading.id || '');
       await fetchPastReadings(supabaseUser.id);
 
       toast({
@@ -138,6 +123,7 @@ export const useTarotReading = () => {
   };
 
   return {
+    predictionId,
     question,
     selectedCards,
     prediction,

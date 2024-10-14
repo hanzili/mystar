@@ -3,6 +3,7 @@ import Root from './routes/root'
 import Login from './routes/login'
 import Prediction from './routes/prediction'
 import History from './routes/history'
+import Chat from './routes/chat'
 
 export const rootRoute = new RootRoute({
   component: Root,
@@ -26,8 +27,15 @@ const historyRoute = new Route({
   component: History,
 })
 
+const chatRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: '/chat',
+  component: Chat,
+})
+
 export const routeTree = rootRoute.addChildren([
   loginRoute,
   predictionRoute,
   historyRoute,
+  chatRoute,
 ])

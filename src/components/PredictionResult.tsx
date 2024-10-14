@@ -12,22 +12,34 @@ import {
   AccordionIcon,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { useNavigate } from '@tanstack/react-router';
 import { TarotReading } from '../lib/supabase';
 
 interface PredictionResultProps {
+  predictionId: string;
   prediction: string;
   pastReadings: TarotReading[];
 }
 
 const PredictionResult: React.FC<PredictionResultProps> = ({
+  predictionId,
   prediction,
   pastReadings,
 }) => {
+  const navigate = useNavigate();
   const bgColor = useColorModeValue('white', 'gray.700');
   const borderColor = useColorModeValue('purple.200', 'purple.600');
   const headingColor = useColorModeValue('purple.600', 'purple.300');
   const textColor = useColorModeValue('gray.800', 'gray.100');
   const accordionBgColor = useColorModeValue('purple.50', 'purple.900');
+
+  const handleChatWithAstrologist = () => {
+    console.log('redirecting to chat with predictionId', predictionId)
+    navigate({ 
+      to: '/chat',
+      search: { predictionId: predictionId }
+    });
+  };
 
   return (
     <Box bg={bgColor} borderRadius="lg" boxShadow="md" p={6} width="100%">
@@ -45,10 +57,20 @@ const PredictionResult: React.FC<PredictionResultProps> = ({
                 onClick={() => window.location.reload()}
                 colorScheme="purple"
                 size="lg"
+                mr={4}
                 _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
                 transition="all 0.2s"
               >
                 Start New Reading
+              </Button>
+              <Button
+                onClick={handleChatWithAstrologist}
+                colorScheme="teal"
+                size="lg"
+                _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+                transition="all 0.2s"
+              >
+                Chat with AI Astrologist
               </Button>
             </Box>
           </>

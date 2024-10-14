@@ -12,11 +12,20 @@ export interface User {
 }
 
 export interface TarotReading {
-  id?: number;
+  id?: string;
   user_id: string;
   question: string;
   cards: string;
   prediction: string;
+  created_at?: string;
+}
+
+export interface ChatMessage {
+  id?: string;
+  user_id: string;
+  prediction_id: string;
+  message: string;
+  is_ai_response: boolean;
   created_at?: string;
 }
 
@@ -96,4 +105,38 @@ export async function getSupabaseUserId(clerkUserId: string): Promise<string | n
   }
 
   return data?.id || null;
+}
+
+export async function saveChatMessage(message: Omit<ChatMessage, 'id' | 'created_at'>): Promise<ChatMessage> {
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .insert(message)
+    .select();
+
+  if (error) {
+    console.error('Error saving chat message:', error);
+    throw error;
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error('No data returned after saving chat message');
+  }
+
+  return data[0] as ChatMessage;
+}
+
+export async function getChatMessages(userId: string, predictionId: string): Promise<ChatMessage[]> {
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('prediction_id', predictionId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching chat messages:', error);
+    throw error;
+  }
+
+  return data as ChatMessage[];
 }

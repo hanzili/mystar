@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, VStack, useColorModeValue } from '@chakra-ui/react'
 import QuestionForm from '../components/QuestionForm'
 import CardSelection from '../components/CardSelection'
@@ -8,6 +7,7 @@ import { useTarotReading } from '../hooks/useTarotReading'
 
 export default function Prediction() {
   const {
+    predictionId,
     question,
     selectedCards,
     prediction,
@@ -26,6 +26,7 @@ export default function Prediction() {
         {isLoading && <LoadingAnimation />}
         {prediction && (
           <PredictionResult
+            predictionId={predictionId}
             prediction={prediction}
             pastReadings={[]}
           />
