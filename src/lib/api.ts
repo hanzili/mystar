@@ -1,3 +1,5 @@
+import { ChatMessage, TarotReading } from "./types";
+
 export async function generateTarotPrediction(question: string, cards: string, userId: string) {
   try {
     const response = await fetch(
@@ -17,14 +19,17 @@ export async function generateTarotPrediction(question: string, cards: string, u
     }
 
     const data = await response.json();
-    return data.prediction;
+    return {
+      prediction: data.prediction,
+      firstMessage: data.firstMessage,
+    };
   } catch (error) {
     console.error('Error generating prediction:', error);
     throw error;
   }
 }
 
-export async function chatWithAIAstrologist(message: string, userId: string, predictionId: string) {
+export async function chatWithAIAstrologist(message: string, userId: string, predictionId: string, chatHistory: ChatMessage[], tarotPrediction: TarotReading) {
   try {
     const response = await fetch(
       'https://didojidulfoxymrtnesc.supabase.co/functions/v1/ai-astrologist-chat',
@@ -37,7 +42,9 @@ export async function chatWithAIAstrologist(message: string, userId: string, pre
         body: JSON.stringify({ 
           message, 
           userId,
-          predictionId
+          predictionId,
+          chatHistory,
+          tarotPrediction
         }),
       }
     );

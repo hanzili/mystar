@@ -73,6 +73,23 @@ export async function saveTarotReading(reading: Omit<TarotReading, 'id' | 'creat
   return data[0] as TarotReading;
 }
 
+export async function getTarotReading(userId: string, predictionId: string): Promise<TarotReading | null> {
+  const { data, error } = await supabase
+    .from('tarot_readings')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('id', predictionId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching tarot reading:', error);
+    throw error;
+  }
+
+  return data as TarotReading | null;
+}
+
+
 export async function getTarotReadings(userId: string): Promise<TarotReading[]> {
   const { data, error } = await supabase
     .from('tarot_readings')

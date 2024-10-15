@@ -3,13 +3,12 @@ import { useUser } from '@clerk/clerk-react';
 import { useToast } from '@chakra-ui/react';
 import {
   saveTarotReading,
-  getTarotReadings,
   getOrCreateUser,
+  saveChatMessage,
 } from '../lib/supabase';
 import { generateTarotPrediction } from '../lib/api';
-import { TarotReading, User } from '../lib/types';
+import { User } from '../lib/types';
 import { SelectedCard } from '../lib/types';
-
 
 export const useTarotReading = () => {
   const { user } = useUser();
@@ -18,7 +17,6 @@ export const useTarotReading = () => {
   const [prediction, setPrediction] = useState('');
   const [predictionId, setPredictionId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [pastReadings, setPastReadings] = useState<TarotReading[]>([]);
   const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
   const toast = useToast();
 
@@ -33,28 +31,11 @@ export const useTarotReading = () => {
     try {
       const supabaseUserData = await getOrCreateUser(user.id, user.primaryEmailAddress?.emailAddress || '');
       setSupabaseUser(supabaseUserData);
-      fetchPastReadings(supabaseUserData.id);
     } catch (error) {
       console.error('Failed to fetch or create Supabase user:', error);
       toast({
         title: 'Error',
         description: 'Failed to initialize user data.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const fetchPastReadings = async (userId: string) => {
-    try {
-      const readings = await getTarotReadings(userId);
-      setPastReadings(readings);
-    } catch (error) {
-      console.error('Failed to fetch past readings:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch past readings.',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -79,22 +60,36 @@ export const useTarotReading = () => {
         .map((card) => `${card.name}${card.isReversed ? ' (Reversed)' : ''}`)
         .join(', ');
 
-      const generatedPrediction = await generateTarotPrediction(question, cardDescriptions, supabaseUser.id);
+      const { prediction, firstMessage } = await generateTarotPrediction(question, cardDescriptions, supabaseUser.id);
 
-      if (!generatedPrediction) {
+      if (!prediction) {
         throw new Error('No prediction received');
       }
 
-      setPrediction(generatedPrediction);
+      setPrediction(prediction);
       const reading = await saveTarotReading({
         user_id: supabaseUser.id,
         question,
         cards: cardDescriptions,
-        prediction: generatedPrediction,
+        prediction: prediction,
       });
-      setPredictionId(reading.id || '');
-      await fetchPastReadings(supabaseUser.id);
+      console.log('Reading saved:', JSON.stringify(reading));
+      setPredictionId(reading.id ?? '');
 
+      // insert AI message
+      await saveChatMessage({
+        prediction_id: reading.id!,
+        message: `Hello! I'm Celeste, your AI Tarot reader. I've drawn ${cards.length} cards in response to your question: "${question}". \n\nThe cards suggest ${prediction}`,
+        is_ai_response: true,
+        user_id: supabaseUser.id,
+      });
+      await saveChatMessage({
+        prediction_id: reading.id!,
+        message: firstMessage,
+        is_ai_response: true,
+        user_id: supabaseUser.id,
+      });
+      
       toast({
         title: 'Reading Complete',
         description: 'Your tarot reading has been generated and saved.',
@@ -102,6 +97,7 @@ export const useTarotReading = () => {
         duration: 5000,
         isClosable: true,
       });
+
     } catch (error) {
       console.error('Error generating prediction:', error);
       setPrediction(
@@ -133,7 +129,6 @@ export const useTarotReading = () => {
     selectedCards,
     prediction,
     isLoading,
-    pastReadings,
     handleQuestionSubmit,
     handleCardSelection,
     resetReading, // Return the reset function

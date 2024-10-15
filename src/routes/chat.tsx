@@ -9,6 +9,8 @@ export default function Chat() {
 
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const chatBgColor = useColorModeValue('white', 'gray.800');
+  const aiMessageBgColor = useColorModeValue('gray.100', 'gray.700');
+  const userMessageBgColor = useColorModeValue('purple.100', 'purple.700');
 
   return (
     <Box minHeight="calc(100vh - 80px)" bg={bgColor} p={4}>
@@ -24,7 +26,7 @@ export default function Chat() {
           {messages.map((message, index) => (
             <Flex key={index} justifyContent={message.is_ai_response ? 'flex-start' : 'flex-end'} mb={2}>
               <Box
-                bg={message.is_ai_response ? 'gray.100' : 'purple.100'}
+                bg={message.is_ai_response ? aiMessageBgColor : userMessageBgColor}
                 color={useColorModeValue('gray.800', 'white')}
                 borderRadius="lg"
                 px={3}

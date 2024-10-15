@@ -8,8 +8,10 @@ import {
   Box,
   Text,
   useColorModeValue,
+  Button,
 } from "@chakra-ui/react";
 import { TarotReading } from "../lib/types";
+import { useNavigate } from "@tanstack/react-router";
 
 interface PastReadingsListProps {
   pastReadings: TarotReading[];
@@ -18,8 +20,16 @@ interface PastReadingsListProps {
 const PastReadingsList: React.FC<PastReadingsListProps> = ({
   pastReadings,
 }) => {
+  const navigate = useNavigate();
   const borderColor = useColorModeValue("purple.200", "purple.600");
   const accordionBgColor = useColorModeValue("purple.50", "purple.900");
+
+  const handleChatWithAstrologist = (predictionId: string) => {
+    navigate({
+      to: "/chat",
+      search: { predictionId },
+    });
+  };
 
   return (
     <Accordion allowMultiple>
@@ -53,6 +63,14 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({
             >
               {new Date(reading.created_at!).toLocaleString()}
             </Text>
+            <Button
+              mt={4}
+              colorScheme="purple"
+              size="sm"
+              onClick={() => handleChatWithAstrologist(reading.id!)}
+            >
+              Chat with AI Astrologist
+            </Button>
           </AccordionPanel>
         </AccordionItem>
       ))}

@@ -7,6 +7,7 @@ import LoadingAnimation from "../components/LoadingAnimation";
 
 export default function Prediction() {
   const {
+    predictionId,
     question,
     selectedCards,
     prediction,
@@ -33,6 +34,7 @@ export default function Prediction() {
         {/* Step 4: Show the Prediction */}
         {prediction && (
           <CurrentPrediction
+            predictionId={predictionId}
             prediction={prediction}
             onStartNewReading={resetReading} // Reset the state to start from the question form
             cards={selectedCards}
