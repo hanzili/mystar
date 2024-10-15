@@ -69,7 +69,7 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({
               size="sm"
               onClick={() => handleChatWithAstrologist(reading.id!)}
             >
-              Chat with AI Astrologist
+              In-Depth Analysis
             </Button>
           </AccordionPanel>
         </AccordionItem>

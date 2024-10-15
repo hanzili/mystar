@@ -21,7 +21,7 @@ export default function Login() {
     <VStack spacing={8} align="center" justify="center" height="calc(100vh - 100px)">
       <Box textAlign="center" bg={bgColor} p={8} borderRadius="lg" boxShadow="xl">
         <Heading as="h2" size="xl" mb={4} color={headingColor}>
-          Welcome to Mystic Tarot
+          Welcome to Mystar
         </Heading>
         <Text fontSize="lg" mb={6}>
           Unlock the secrets of the cards and discover your destiny

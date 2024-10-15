@@ -1,11 +1,20 @@
 // src/routes/chat.tsx
-import { Box, VStack, Input, Button, Flex, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, Input, Button, useColorModeValue } from '@chakra-ui/react';
 import { useChat } from '../hooks/useChat';
 import { useSearch } from '@tanstack/react-router';
+import CurrentPrediction from "../components/CurrentPrediction";
 
 export default function Chat() {
   const search = useSearch({ from: '/chat' }) as { predictionId: string };
-  const { messages, input, setInput, isLoading, handleSendMessage, messagesEndRef } = useChat(search.predictionId);
+  const { 
+    messages, 
+    input, 
+    setInput, 
+    isLoading, 
+    handleSendMessage, 
+    messagesEndRef,
+    tarotReading
+  } = useChat(search.predictionId);
 
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const chatBgColor = useColorModeValue('white', 'gray.800');
@@ -13,8 +22,21 @@ export default function Chat() {
   const userMessageBgColor = useColorModeValue('purple.100', 'purple.700');
 
   return (
-    <Box minHeight="calc(100vh - 80px)" bg={bgColor} p={4}>
-      <VStack spacing={4} align="stretch" maxWidth="800px" margin="0 auto">
+    <Flex minHeight="calc(100vh - 80px)" bg={bgColor} p={4}>
+      {/* Left side: CurrentPrediction */}
+      <Box width="40%" pr={4}>
+        {tarotReading && (
+          <CurrentPrediction
+            predictionId={search.predictionId}
+            prediction={tarotReading.prediction}
+            cards={tarotReading.cards}
+            question={tarotReading.question}
+          />
+        )}
+      </Box>
+
+      {/* Right side: Chat */}
+      <Flex width="60%" direction="column">
         <Box
           bg={chatBgColor}
           borderRadius="md"
@@ -22,6 +44,7 @@ export default function Chat() {
           height="calc(100vh - 200px)"
           overflowY="auto"
           boxShadow="md"
+          mb={4}
         >
           {messages.map((message, index) => (
             <Flex key={index} justifyContent={message.is_ai_response ? 'flex-start' : 'flex-end'} mb={2}>
@@ -55,7 +78,7 @@ export default function Chat() {
             Send
           </Button>
         </Flex>
-      </VStack>
-    </Box>
+      </Flex>
+    </Flex>
   );
 }

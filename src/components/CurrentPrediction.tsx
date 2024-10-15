@@ -13,7 +13,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
-import { SelectedCard } from "../lib/types";
+import { SelectedCard } from "../types/types";
 import { tarotCardImages } from "../utils/tarotCards";
 
 interface CurrentPredictionDisplayProps {
@@ -21,7 +21,6 @@ interface CurrentPredictionDisplayProps {
   predictionId?: string;
   cards: SelectedCard[];
   question: string;
-  onStartNewReading: () => void;
 }
 
 const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
@@ -29,7 +28,6 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
   predictionId,
   cards,
   question,
-  onStartNewReading,
 }) => {
   const navigate = useNavigate();
 
@@ -112,17 +110,7 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
           </Text>
         </Box>
 
-        <Box textAlign="center" mt={6}>
-          <Button
-            onClick={onStartNewReading}
-            colorScheme="purple"
-            size="lg"
-            mr={4}
-            _hover={{ transform: "translateY(-2px)", boxShadow: "lg" }}
-            transition="all 0.2s"
-          >
-            Start New Reading
-          </Button>
+        {/* <Box textAlign="center" mt={6}>
           <Button
             onClick={handleChatWithAstrologist}
             colorScheme="teal"
@@ -132,7 +120,7 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
           >
             Chat with AI Astrologist
           </Button>
-        </Box>
+        </Box> */}
       </VStack>
     </Container>
   );

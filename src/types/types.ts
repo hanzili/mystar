@@ -8,7 +8,7 @@ export interface TarotReading {
   id?: string;
   user_id: string;
   question: string;
-  cards: string;
+  cards: SelectedCard[];
   prediction: string;
   created_at?: string;
 }
@@ -22,3 +22,7 @@ export interface ChatMessage {
   created_at?: string;
 }
 
+export interface SelectedCard {
+  name: string;
+  isReversed: boolean;
+}

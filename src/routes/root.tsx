@@ -28,14 +28,14 @@ export default function Root() {
         <Flex align="center" mr={5}>
           <Sparkles size={24} color={useColorModeValue('purple.500', 'purple.300')} />
           <Box as="span" ml={2} fontSize="xl" fontWeight="bold" color={useColorModeValue('purple.500', 'purple.300')}>
-            Mystic Tarot
+            Mystar
           </Box>
         </Flex>
         <Spacer />
         {isSignedIn ? (
           <Flex align="center">
             <Button colorScheme="purple" variant="ghost" onClick={handleNewReading} mr={4}>
-              New Reading
+              Start Reading
             </Button>
             <Link to="/history" style={{ marginRight: '1rem' }}>
               <Button colorScheme="purple" variant="ghost">History</Button>

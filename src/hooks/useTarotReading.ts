@@ -7,15 +7,14 @@ import {
   saveChatMessage,
 } from '../lib/supabase';
 import { generateTarotPrediction } from '../lib/api';
-import { User } from '../lib/types';
-import { SelectedCard } from '../lib/types';
+import { User, SelectedCard } from '../types/types';
+import { useNavigate } from "@tanstack/react-router";
 
 export const useTarotReading = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [question, setQuestion] = useState('');
   const [selectedCards, setSelectedCards] = useState<SelectedCard[]>([]);
-  const [prediction, setPrediction] = useState('');
-  const [predictionId, setPredictionId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
   const toast = useToast();
@@ -66,17 +65,14 @@ export const useTarotReading = () => {
         throw new Error('No prediction received');
       }
 
-      setPrediction(prediction);
       const reading = await saveTarotReading({
         user_id: supabaseUser.id,
         question,
         cards: cardDescriptions,
         prediction: prediction,
       });
-      console.log('Reading saved:', JSON.stringify(reading));
-      setPredictionId(reading.id ?? '');
 
-      // insert AI message
+      // Save AI messages
       await saveChatMessage({
         prediction_id: reading.id!,
         message: `Hello! I'm Celeste, your AI Tarot reader. I've drawn ${cards.length} cards in response to your question: "${question}". \n\nThe cards suggest ${summary}`,
@@ -98,11 +94,11 @@ export const useTarotReading = () => {
         isClosable: true,
       });
 
+      // Redirect to chat page
+      navigate({ to: '/chat', search: { predictionId: reading.id } });
+
     } catch (error) {
       console.error('Error generating prediction:', error);
-      setPrediction(
-        'An error occurred while generating your prediction. Please try again.'
-      );
       toast({
         title: 'Error',
         description: 'Failed to generate prediction. Please try again.',
@@ -115,22 +111,11 @@ export const useTarotReading = () => {
     }
   };
 
-  // New function to reset the reading process
-  const resetReading = () => {
-    setQuestion('');
-    setSelectedCards([]);
-    setPrediction('');
-    setPredictionId('');
-  };
-
   return {
-    predictionId,
     question,
     selectedCards,
-    prediction,
     isLoading,
     handleQuestionSubmit,
     handleCardSelection,
-    resetReading, // Return the reset function
   };
 };
