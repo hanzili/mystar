@@ -17,9 +17,14 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
 
   return (
     <VStack spacing={6} width="100%">
-      <Heading as="h2" size="xl" color="yellow.300" textAlign="center">
+      <Heading as="h2" size="xl" color="purple.600" textAlign="center">
         {isRevealing ? "Revealing Your Cards" : "Select 3 Cards"}
       </Heading>
+      <Text fontSize="lg" fontWeight="medium" color="purple.600">
+        {isRevealing
+          ? "Preparing your reading..."
+          : `${selectedCards.length}/3 cards selected`}
+      </Text>
       <Grid
         templateColumns="repeat(auto-fill, minmax(120px, 1fr))"
         gap={4}
@@ -96,11 +101,6 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
           </MotionBox>
         ))}
       </Grid>
-      <Text fontSize="lg" fontWeight="medium" color="yellow.300">
-        {isRevealing
-          ? "Preparing your reading..."
-          : `${selectedCards.length}/3 cards selected`}
-      </Text>
     </VStack>
   );
 };

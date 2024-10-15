@@ -26,10 +26,20 @@ export const useCardSelection = (onSelect: (cards: { name: string; isReversed: b
   }, [selectedCards, onSelect, isRevealing]);
 
   const handleCardClick = (card: string) => {
-    if (selectedCards.length < 3 && !selectedCards.some(c => c.name === card) && !isRevealing) {
-      const isReversed = Math.random() < 0.5; // 50% chance of being reversed
-      setSelectedCards(prev => [...prev, { name: card, isReversed }]);
-    }
+    if (isRevealing) return;
+
+    setSelectedCards(prev => {
+      const existingCard = prev.find(c => c.name === card);
+      if (existingCard) {
+        // Unselect the card
+        return prev.filter(c => c.name !== card);
+      } else if (prev.length < 3) {
+        // Select the card
+        const isReversed = Math.random() < 0.5;
+        return [...prev, { name: card, isReversed }];
+      }
+      return prev;
+    });
   };
 
   return { selectedCards, flippedCards, isRevealing, handleCardClick };

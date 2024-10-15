@@ -8,16 +8,23 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
 const openai = new OpenAI({ apiKey: openAiKey })
 
-const systemPrompt = `You are a friendly tarot reader. Give detailed predictions based on a Past, Present, Future spread, mentioning the specific cards drawn. Also ask a follow-up question to confirm an aspect of the prediction. Respond with a JSON object containing 'prediction' and 'firstMessage' fields.
+const systemPrompt = `You are a friendly and insightful tarot reader. Provide detailed, specific predictions based on a Past, Present, Future spread, mentioning the cards drawn and directly relating them to the user's question. 
+
+Use simple language and create vivid, relatable scenarios based on the cards. Avoid vague statements and instead offer concrete examples of how the cards' meanings might manifest in the user's life.
+
+Ask a follow-up question to explore a specific aspect of the prediction. Provide a brief, direct summary of the predicted outcome without mentioning the cards.
+
+Respond with a JSON object containing 'prediction', 'firstMessage', and 'summary' fields.
 
 Example input:
-Question: Will I get a new job soon?
-Cards: The Tower (Past), The Fool (Present), Ten of Cups (Future)
+Question: Will I get PR (Permanent Residency) soon?
+Cards: The High Priestess (Past), The Chariot (Present), Temperance (Future)
 
 Example output:
 {
-  "prediction": "Your past is represented by The Tower, suggesting a period of sudden change or upheaval in your career. This might have been a job loss or a realization that your previous path wasn't right for you. The Fool in your present position indicates you're at the beginning of a new journey, ready to take risks and explore new opportunities. You're open to new experiences and have a fresh perspective on your career. The Ten of Cups in your future is a very positive sign, representing fulfillment and happiness. This suggests that not only will you likely find a new job, but it could bring you significant satisfaction and a sense of achievement. The combination of these cards indicates that while you may have faced challenges in the past, you're now on a path that could lead to a much more fulfilling career.",
-  "firstMessage": "The Tower card in your past position suggests you've experienced some significant changes or challenges in your career recently. Can you tell me more about these experiences and how they've influenced your current job search?"
+  "prediction": "In the past, The High Priestess suggests you relied heavily on your intuition when starting your PR journey. Maybe you didn't immediately seek advice from others who've gone through the process, trusting your gut instead. For instance, you might have chosen your current job or location based on a feeling it would help your PR application. The Chariot in your present position shows you're now taking charge of your PR process. You're likely gathering all necessary documents, filling out forms, and actively pursuing your goal. You might be juggling work and PR application tasks, showing real determination. Temperance in your future indicates that while you're eager, patience will be key. The PR process often involves waiting periods. You might need to find a balance between pushing your application forward and allowing bureaucratic processes to unfold. For example, after submitting your application, you may need to resist the urge to constantly check for updates and instead focus on improving other aspects of your life or career while you wait.",
+  "firstMessage": "I see that you've been relying on your intuition a lot in your PR journey. Can you tell me about a specific decision you made regarding your PR application that was based more on a gut feeling than external advice?",
+  "summary": "Your PR journey looks promising, but it will require a balance of active effort and patient waiting. Stay determined but prepare for some delays in the process."
 }`
 
 
@@ -48,7 +55,7 @@ serve(async (req) => {
         },
         {
           role: "user",
-          content: `Question: ${question}\nCards: ${JSON.stringify(cards)}\nProvide a JSON response with a detailed 'prediction' based on the spread, mentioning each card, and a 'firstMessage' that asks for confirmation about an aspect of the prediction.`
+          content: `Question: ${question}\nCards: ${JSON.stringify(cards)}\nProvide a JSON response with a detailed 'prediction' based on the spread, mentioning each card, a 'firstMessage' that asks for confirmation about an aspect of the prediction, and a 'summary' that provides a brief, direct summary of the predicted outcome without mentioning the cards.`
         }
       ],
       max_tokens: 500,
@@ -59,19 +66,20 @@ serve(async (req) => {
 
     console.log(`openai result: ${JSON.stringify(result, null, 2)}`)
 
-    const { prediction, firstMessage } = result
+    const { prediction, firstMessage, summary } = result
 
     console.log(`prediction: ${prediction}`)
     console.log(`firstMessage: ${firstMessage}`)
+    console.log(`summary: ${summary}`)
 
-    if (!prediction || !firstMessage) {
-      console.error(`Invalid response from OpenAI: missing prediction or firstMessage`)
+    if (!prediction || !firstMessage || !summary) {
+      console.error(`Invalid response from OpenAI: missing prediction, firstMessage, or summary`)
       throw new Error("Invalid response from OpenAI: missing required fields")
     }
-    console.log(`Received prediction and first message from OpenAI`)
+    console.log(`Received prediction, first message, and summary from OpenAI`)
 
     return new Response(
-      JSON.stringify({ prediction, firstMessage }),
+      JSON.stringify({ prediction, firstMessage, summary }),
       { headers: { ...headers, 'Content-Type': 'application/json' } },
     )
   } catch (error) {

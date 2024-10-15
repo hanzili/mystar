@@ -83,8 +83,9 @@ export const useChat = (predictionId: string) => {
           };
           setMessages(prev => [...prev, userMessage as ChatMessage]);
           setInput('');
+          await saveChatMessage(userMessage);
 
-          const aiResponse = await chatWithAIAstrologist(input, supabaseUserId, predictionId, messages, tarotPrediction);
+          const aiResponse = await chatWithAIAstrologist(input, user.id, predictionId);
 
           const aiMessage: Omit<ChatMessage, 'id' | 'created_at'> = {
             user_id: supabaseUserId,
@@ -92,11 +93,8 @@ export const useChat = (predictionId: string) => {
             message: aiResponse,
             is_ai_response: true,
           };
-          
-          setMessages(prev => [...prev, aiMessage as ChatMessage]);
-
-          await saveChatMessage(userMessage);
           await saveChatMessage(aiMessage);
+          setMessages(prev => [...prev, aiMessage as ChatMessage]);     
         }
       } catch (error) {
         console.error('Error sending message:', error);

@@ -60,7 +60,7 @@ export const useTarotReading = () => {
         .map((card) => `${card.name}${card.isReversed ? ' (Reversed)' : ''}`)
         .join(', ');
 
-      const { prediction, firstMessage } = await generateTarotPrediction(question, cardDescriptions, supabaseUser.id);
+      const { prediction, firstMessage, summary } = await generateTarotPrediction(question, cardDescriptions, supabaseUser.id);
 
       if (!prediction) {
         throw new Error('No prediction received');
@@ -79,7 +79,7 @@ export const useTarotReading = () => {
       // insert AI message
       await saveChatMessage({
         prediction_id: reading.id!,
-        message: `Hello! I'm Celeste, your AI Tarot reader. I've drawn ${cards.length} cards in response to your question: "${question}". \n\nThe cards suggest ${prediction}`,
+        message: `Hello! I'm Celeste, your AI Tarot reader. I've drawn ${cards.length} cards in response to your question: "${question}". \n\nThe cards suggest ${summary}`,
         is_ai_response: true,
         user_id: supabaseUser.id,
       });

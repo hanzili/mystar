@@ -1,4 +1,5 @@
 import { ChatMessage, TarotReading } from "./types";
+import { getSupabaseUserId, getChatMessages, getTarotReading } from './supabase';
 
 export async function generateTarotPrediction(question: string, cards: string, userId: string) {
   try {
@@ -22,6 +23,7 @@ export async function generateTarotPrediction(question: string, cards: string, u
     return {
       prediction: data.prediction,
       firstMessage: data.firstMessage,
+      summary: data.summary,
     };
   } catch (error) {
     console.error('Error generating prediction:', error);
@@ -29,8 +31,16 @@ export async function generateTarotPrediction(question: string, cards: string, u
   }
 }
 
-export async function chatWithAIAstrologist(message: string, userId: string, predictionId: string, chatHistory: ChatMessage[], tarotPrediction: TarotReading) {
+export async function chatWithAIAstrologist(message: string, userId: string, predictionId: string) {
   try {
+    const supabaseUserId = await getSupabaseUserId(userId);
+    if (!supabaseUserId) {
+      throw new Error('Failed to get Supabase user ID');
+    }
+
+    const chatHistory = await getChatMessages(supabaseUserId, predictionId);
+    const tarotPrediction = await getTarotReading(supabaseUserId, predictionId);
+
     const response = await fetch(
       'https://didojidulfoxymrtnesc.supabase.co/functions/v1/ai-astrologist-chat',
       {
@@ -41,10 +51,10 @@ export async function chatWithAIAstrologist(message: string, userId: string, pre
         },
         body: JSON.stringify({ 
           message, 
-          userId,
+          userId: supabaseUserId,
           predictionId,
           chatHistory,
-          tarotPrediction
+          tarotPrediction,
         }),
       }
     );
@@ -60,4 +70,3 @@ export async function chatWithAIAstrologist(message: string, userId: string, pre
     throw error;
   }
 }
-
