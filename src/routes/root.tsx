@@ -4,6 +4,7 @@ import { Box, Flex, Spacer, Button, useColorModeValue } from '@chakra-ui/react'
 import { Sparkles } from 'lucide-react'
 import { useUser, UserButton, SignInButton } from '@clerk/clerk-react'
 import ColorModeToggle from '../components/ColorModeToggle'
+import { Image } from '@chakra-ui/react'
 
 export default function Root() {
   const { isSignedIn, isLoaded } = useUser()
@@ -27,6 +28,7 @@ export default function Root() {
       <Flex as="header" align="center" justify="space-between" wrap="wrap" padding="1.5rem" bg={headerBg} boxShadow="sm">
         <Flex align="center" mr={5}>
           <Sparkles size={24} color={useColorModeValue('purple.500', 'purple.300')} />
+          <Image src="/logo.png" alt="Mystar" width={8} height={8} />
           <Box as="span" ml={2} fontSize="xl" fontWeight="bold" color={useColorModeValue('purple.500', 'purple.300')}>
             Mystar
           </Box>

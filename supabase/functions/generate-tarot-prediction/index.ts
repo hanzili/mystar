@@ -14,7 +14,7 @@ Use simple language and create vivid, relatable scenarios based on the cards. Av
 
 Ask a follow-up question to explore a specific aspect of the prediction. Provide a brief, direct summary of the predicted outcome without mentioning the cards.
 
-Respond with a JSON object containing 'prediction', 'firstMessage', and 'summary' fields.
+Respond with a JSON object containing 'prediction' (with 'past', 'present', and 'future' fields), 'firstMessage', and 'summary' fields.
 
 Example input:
 Question: Will I get PR (Permanent Residency) soon?
@@ -22,7 +22,11 @@ Cards: The High Priestess (Past), The Chariot (Present), Temperance (Future)
 
 Example output:
 {
-  "prediction": "In the past, The High Priestess suggests you relied heavily on your intuition when starting your PR journey. Maybe you didn't immediately seek advice from others who've gone through the process, trusting your gut instead. For instance, you might have chosen your current job or location based on a feeling it would help your PR application. The Chariot in your present position shows you're now taking charge of your PR process. You're likely gathering all necessary documents, filling out forms, and actively pursuing your goal. You might be juggling work and PR application tasks, showing real determination. Temperance in your future indicates that while you're eager, patience will be key. The PR process often involves waiting periods. You might need to find a balance between pushing your application forward and allowing bureaucratic processes to unfold. For example, after submitting your application, you may need to resist the urge to constantly check for updates and instead focus on improving other aspects of your life or career while you wait.",
+  "prediction": {
+    "past": "The High Priestess suggests you relied heavily on your intuition when starting your PR journey. Maybe you didn't immediately seek advice from others who've gone through the process, trusting your gut instead. For instance, you might have chosen your current job or location based on a feeling it would help your PR application.",
+    "present": "The Chariot in your present position shows you're now taking charge of your PR process. You're likely gathering all necessary documents, filling out forms, and actively pursuing your goal. You might be juggling work and PR application tasks, showing real determination.",
+    "future": "Temperance in your future indicates that while you're eager, patience will be key. The PR process often involves waiting periods. You might need to find a balance between pushing your application forward and allowing bureaucratic processes to unfold. For example, after submitting your application, you may need to resist the urge to constantly check for updates and instead focus on improving other aspects of your life or career while you wait."
+  },
   "firstMessage": "I see that you've been relying on your intuition a lot in your PR journey. Can you tell me about a specific decision you made regarding your PR application that was based more on a gut feeling than external advice?",
   "summary": "Your PR journey looks promising, but it will require a balance of active effort and patient waiting. Stay determined but prepare for some delays in the process."
 }`
@@ -68,12 +72,12 @@ serve(async (req) => {
 
     const { prediction, firstMessage, summary } = result
 
-    console.log(`prediction: ${prediction}`)
+    console.log(`prediction: ${JSON.stringify(prediction, null, 2)}`)
     console.log(`firstMessage: ${firstMessage}`)
     console.log(`summary: ${summary}`)
 
-    if (!prediction || !firstMessage || !summary) {
-      console.error(`Invalid response from OpenAI: missing prediction, firstMessage, or summary`)
+    if (!prediction || !prediction.past || !prediction.present || !prediction.future || !firstMessage || !summary) {
+      console.error(`Invalid response from OpenAI: missing prediction fields, firstMessage, or summary`)
       throw new Error("Invalid response from OpenAI: missing required fields")
     }
     console.log(`Received prediction, first message, and summary from OpenAI`)

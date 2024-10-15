@@ -1,5 +1,5 @@
 import { TarotReading as DbTarotReading } from '../lib/types';
-import { TarotReading as FrontendTarotReading, SelectedCard } from '../types/types';
+import { TarotReading as FrontendTarotReading, Prediction, SelectedCard } from '../types/types';
 
 export const readingToFrontendFormat = (dbReading: DbTarotReading | null): FrontendTarotReading | null => {
   if (!dbReading) return null;
@@ -19,8 +19,11 @@ export const readingToFrontendFormat = (dbReading: DbTarotReading | null): Front
     };
   });
 
+  const prediction: Prediction = JSON.parse(dbReading.prediction);
+
   return {
     ...dbReading,
-    cards
+    cards,
+    prediction
   };
 };

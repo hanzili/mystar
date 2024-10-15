@@ -69,7 +69,7 @@ export const useTarotReading = () => {
         user_id: supabaseUser.id,
         question,
         cards: cardDescriptions,
-        prediction: prediction,
+        prediction: JSON.stringify(prediction),
       });
 
       // Save AI messages

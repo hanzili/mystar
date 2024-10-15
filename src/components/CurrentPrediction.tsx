@@ -1,5 +1,5 @@
 // src/components/CurrentPredictionDisplay.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Heading,
@@ -11,13 +11,14 @@ import {
   useColorModeValue,
   Container,
   Divider,
+  Flex,
 } from "@chakra-ui/react";
-import { useNavigate } from "@tanstack/react-router";
-import { SelectedCard } from "../types/types";
+import { SelectedCard, Prediction } from "../types/types";
 import { tarotCardImages } from "../utils/tarotCards";
+import { Clock, Sun, Sunrise } from "lucide-react";
 
 interface CurrentPredictionDisplayProps {
-  prediction: string;
+  prediction: Prediction;
   predictionId?: string;
   cards: SelectedCard[];
   question: string;
@@ -25,24 +26,43 @@ interface CurrentPredictionDisplayProps {
 
 const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
   prediction,
-  predictionId,
   cards,
   question,
 }) => {
-  const navigate = useNavigate();
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   const headingColor = useColorModeValue("purple.600", "purple.300");
   const textColor = useColorModeValue("gray.700", "gray.200");
   const cardBgColor = useColorModeValue("white", "gray.700");
   const cardBorderColor = useColorModeValue("purple.200", "purple.500");
+  const predictionBgColor = useColorModeValue("purple.50", "gray.800");
 
-  const handleChatWithAstrologist = () => {
-    console.log("redirecting to chat with predictionId", predictionId);
-    navigate({
-      to: "/chat",
-      search: { predictionId: predictionId },
-    });
+  const getHighlightColor = (index: number) => {
+    if (hoveredCard === index) {
+      return useColorModeValue("yellow.100", "yellow.700");
+    }
+    return "transparent";
   };
+
+  const PredictionSection = ({ title, content, icon, index }) => (
+    <Box
+      bg={getHighlightColor(index)}
+      p={4}
+      borderRadius="md"
+      transition="background-color 0.3s"
+      boxShadow="md"
+    >
+      <Flex align="center" mb={2}>
+        <Box as={icon} size={24} color={headingColor} mr={2} />
+        <Text fontSize="lg" fontWeight="bold" color={headingColor}>
+          {title}
+        </Text>
+      </Flex>
+      <Text fontSize="md" color={textColor} lineHeight="tall">
+        {content}
+      </Text>
+    </Box>
+  );
 
   return (
     <Container maxW="4xl" py={8}>
@@ -51,7 +71,7 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
           Your Tarot Prediction
         </Heading>
         
-        <Box bg={useColorModeValue("purple.50", "gray.800")} p={6} borderRadius="lg" boxShadow="md">
+        <Box bg={predictionBgColor} p={6} borderRadius="lg" boxShadow="md">
           <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={4}>
             Question:
           </Text>
@@ -77,6 +97,8 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
                 borderColor={cardBorderColor}
                 transition="all 0.3s"
                 _hover={{ transform: "translateY(-5px)", boxShadow: "lg" }}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
               >
                 <Box position="relative" width="150px" height="150px">
                   <Image
@@ -105,9 +127,26 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
           <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={4}>
             Prediction:
           </Text>
-          <Text fontSize="lg" lineHeight="tall" color={textColor}>
-            {prediction}
-          </Text>
+          <VStack align="stretch" spacing={4} bg={predictionBgColor} p={6} borderRadius="lg">
+            <PredictionSection
+              title="Past"
+              content={prediction.past}
+              icon={Clock}
+              index={0}
+            />
+            <PredictionSection
+              title="Present"
+              content={prediction.present}
+              icon={Sun}
+              index={1}
+            />
+            <PredictionSection
+              title="Future"
+              content={prediction.future}
+              icon={Sunrise}
+              index={2}
+            />
+          </VStack>
         </Box>
 
         {/* <Box textAlign="center" mt={6}>

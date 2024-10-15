@@ -1,4 +1,3 @@
-import { ChatMessage, TarotReading } from "./types";
 import { getSupabaseUserId, getChatMessages, getTarotReading } from './supabase';
 
 export async function generateTarotPrediction(question: string, cards: string, userId: string) {
@@ -21,7 +20,11 @@ export async function generateTarotPrediction(question: string, cards: string, u
 
     const data = await response.json();
     return {
-      prediction: data.prediction,
+      prediction: {
+        past: data.prediction.past,
+        present: data.prediction.present,
+        future: data.prediction.future,
+      },
       firstMessage: data.firstMessage,
       summary: data.summary,
     };

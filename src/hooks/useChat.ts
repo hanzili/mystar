@@ -87,7 +87,7 @@ export const useChat = (predictionId: string) => {
           setInput('');
           await saveChatMessage(userMessage);
 
-          const aiResponse = await chatWithAIAstrologist(input, supabaseUserId, predictionId);
+          const aiResponse = await chatWithAIAstrologist(input, user.id, predictionId);
 
           const aiMessage: Omit<ChatMessage, 'id' | 'created_at'> = {
             user_id: supabaseUserId,
