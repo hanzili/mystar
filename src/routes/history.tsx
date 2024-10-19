@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Box, Heading, VStack, Text, useColorModeValue } from '@chakra-ui/react';
 import { useUser } from '@clerk/clerk-react';
 import { getTarotReadings, getSupabaseUserId } from '../lib/supabase';
-import { TarotReading } from '../lib/types';
+import { TarotReading } from '../lib/supabase_types';
 import PastReadingsList from '../components/PastReadingsList';
 
 export default function History() {

@@ -1,4 +1,4 @@
-import { TarotReading as DbTarotReading } from '../lib/types';
+import { TarotReading as DbTarotReading } from '../lib/supabase_types';
 import { TarotReading as FrontendTarotReading, Prediction, SelectedCard } from '../types/types';
 
 export const readingToFrontendFormat = (dbReading: DbTarotReading | null): FrontendTarotReading | null => {

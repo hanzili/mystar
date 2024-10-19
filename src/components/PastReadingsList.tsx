@@ -10,7 +10,7 @@ import {
   useColorModeValue,
   Button,
 } from "@chakra-ui/react";
-import { TarotReading } from "../lib/types";
+import { TarotReading } from "../lib/supabase_types";
 import { useNavigate } from "@tanstack/react-router";
 
 interface PastReadingsListProps {
@@ -29,6 +29,16 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({
       to: "/chat",
       search: { predictionId },
     });
+  };
+
+  const formatPrediction = (prediction: string) => {
+    try {
+      const { past, present, future } = JSON.parse(prediction);
+      return `${past} ${present} ${future}`;
+    } catch (error) {
+      console.error("Error parsing prediction:", error);
+      return prediction; // Fallback to original prediction if parsing fails
+    }
   };
 
   return (
@@ -54,7 +64,7 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({
               <strong>Cards:</strong> {reading.cards}
             </Text>
             <Text mt={2}>
-              <strong>Prediction:</strong> {reading.prediction}
+              <strong>Prediction:</strong> {formatPrediction(reading.prediction)}
             </Text>
             <Text
               mt={2}

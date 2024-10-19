@@ -22,3 +22,8 @@ export interface ChatMessage {
   created_at?: string;
 }
 
+export enum TimeFrame {
+  PAST = 'PAST',
+  PRESENT = 'PRESENT',
+  FUTURE = 'FUTURE'
+}

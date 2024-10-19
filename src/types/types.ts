@@ -20,6 +20,9 @@ export interface ChatMessage {
   message: string;
   is_ai_response: boolean;
   created_at?: string;
+  metadata?: {
+    options?: string[];
+  };
 }
 
 export interface SelectedCard {
@@ -31,4 +34,10 @@ export interface Prediction {
   past: string;
   present: string;
   future: string;
+}
+
+export enum TimeFrame {
+  Past = 'past',
+  Present = 'present',
+  Future = 'future',
 }

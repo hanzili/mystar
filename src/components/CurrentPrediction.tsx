@@ -1,10 +1,9 @@
 // src/components/CurrentPredictionDisplay.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Heading,
   Text,
-  Button,
   VStack,
   HStack,
   Image,
@@ -12,22 +11,30 @@ import {
   Container,
   Divider,
   Flex,
+  Button
 } from "@chakra-ui/react";
 import { SelectedCard, Prediction } from "../types/types";
 import { tarotCardImages } from "../utils/tarotCards";
 import { Clock, Sun, Sunrise } from "lucide-react";
+import { TimeFrame } from "../lib/supabase_types";
 
 interface CurrentPredictionDisplayProps {
   prediction: Prediction;
-  predictionId?: string;
+  predictionId: string;
   cards: SelectedCard[];
   question: string;
+  isChatOpen: boolean;
+  handleGenerateQuestion: (timeFrame: TimeFrame) => void;
+  chatIsGeneratingQuestion: boolean;
 }
 
 const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
   prediction,
   cards,
   question,
+  isChatOpen,
+  handleGenerateQuestion,
+  chatIsGeneratingQuestion,
 }) => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
@@ -37,6 +44,7 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
   const cardBorderColor = useColorModeValue("purple.200", "purple.500");
   const predictionBgColor = useColorModeValue("purple.50", "gray.800");
 
+
   const getHighlightColor = (index: number) => {
     if (hoveredCard === index) {
       return useColorModeValue("yellow.100", "yellow.700");
@@ -44,7 +52,7 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
     return "transparent";
   };
 
-  const PredictionSection = ({ title, content, icon, index }) => (
+  const PredictionSection = ({ title, content, icon, index, timeFrame }: { title: string, content: string, icon: React.ElementType, index: number, timeFrame: TimeFrame }) => (
     <Box
       bg={getHighlightColor(index)}
       p={4}
@@ -61,6 +69,17 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
       <Text fontSize="md" color={textColor} lineHeight="tall">
         {content}
       </Text>
+      {isChatOpen && (
+        <Button
+          mt={4}
+          colorScheme="purple"
+          size="sm"
+          onClick={() => handleGenerateQuestion(timeFrame)}
+          isLoading={chatIsGeneratingQuestion}
+        >
+          Discuss
+        </Button>
+      )}
     </Box>
   );
 
@@ -133,18 +152,21 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
               content={prediction.past}
               icon={Clock}
               index={0}
+              timeFrame={TimeFrame.PAST}
             />
             <PredictionSection
               title="Present"
               content={prediction.present}
               icon={Sun}
               index={1}
+              timeFrame={TimeFrame.PRESENT}
             />
             <PredictionSection
               title="Future"
               content={prediction.future}
               icon={Sunrise}
               index={2}
+              timeFrame={TimeFrame.FUTURE}
             />
           </VStack>
         </Box>

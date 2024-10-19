@@ -1,6 +1,6 @@
 // src/components/CardSelection.tsx
 import React from "react";
-import { Box, Grid, Heading, Text, VStack, Image } from "@chakra-ui/react";
+import { Box, Grid, Heading, Text, VStack, Image, useBreakpointValue } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { tarotCards, tarotCardImages } from "../utils/tarotCards";
 import { useCardSelection } from "../hooks/useCardSelections";
@@ -15,8 +15,16 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
   const { selectedCards, flippedCards, isRevealing, handleCardClick } =
     useCardSelection(onSelect);
 
+  const cardSize = useBreakpointValue({
+    base: { width: "40px", height: "60px" },
+    sm: { width: "50px", height: "75px" },
+    md: { width: "60px", height: "90px" },
+    lg: { width: "70px", height: "105px" },
+    xl: { width: "80px", height: "120px" },
+  });
+
   return (
-    <VStack spacing={6} width="100%">
+    <VStack spacing={4} width="100%">
       <Heading as="h2" size="xl" color="purple.600" textAlign="center">
         {isRevealing ? "Revealing Your Cards" : "Select 3 Cards"}
       </Heading>
@@ -26,16 +34,17 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
           : `${selectedCards.length}/3 cards selected`}
       </Text>
       <Grid
-        templateColumns="repeat(auto-fill, minmax(120px, 1fr))"
-        gap={4}
+        templateColumns={`repeat(auto-fill, minmax(${cardSize?.width}, 1fr))`}
+        gap={1}
         width="100%"
+        justifyContent="center"
       >
         {tarotCards.map((card, index) => (
           <MotionBox
             key={index}
             onClick={() => handleCardClick(card)}
-            width="120px"
-            height="200px"
+            width={cardSize?.width}
+            height={cardSize?.height}
             position="relative"
             cursor="pointer"
             initial={false}
@@ -66,6 +75,8 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
                 src="/images/tarot/card-back.png"
                 alt="Card Back"
                 objectFit="cover"
+                width="100%"
+                height="100%"
               />
             </Box>
 
@@ -91,6 +102,8 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
                 src={tarotCardImages[card]}
                 alt={card}
                 objectFit="cover"
+                width="100%"
+                height="100%"
                 transform={
                   selectedCards.find((c) => c.name === card)?.isReversed
                     ? "rotate(180deg)"

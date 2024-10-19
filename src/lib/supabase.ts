@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { User, TarotReading, ChatMessage } from './types';
+import { User, TarotReading, ChatMessage } from './supabase_types';
 
 // Constants
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -110,7 +110,7 @@ export async function saveChatMessage(message: Omit<ChatMessage, 'id' | 'created
   const { data, error } = await supabase
     .from('chat_messages')
     .insert(message)
-    .select();
+    .select('*');
 
   if (error) {
     console.error('Error saving chat message:', error);
@@ -123,6 +123,7 @@ export async function saveChatMessage(message: Omit<ChatMessage, 'id' | 'created
 
   return data[0] as ChatMessage;
 }
+
 
 export async function getChatMessages(userId: string, predictionId: string): Promise<ChatMessage[]> {
   const { data, error } = await supabase

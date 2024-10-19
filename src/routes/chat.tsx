@@ -1,21 +1,29 @@
-// src/routes/chat.tsx
-import { Box, Flex, Input, Button, useColorModeValue, Icon } from '@chakra-ui/react';
-import { useChat } from '../hooks/useChat';
-import { useSearch } from '@tanstack/react-router';
+import {
+  Box,
+  Flex,
+  Input,
+  Button,
+  useColorModeValue,
+  Icon,
+} from "@chakra-ui/react";
+import { useChat } from "../hooks/useChat";
+import { useSearch } from "@tanstack/react-router";
 import CurrentPrediction from "../components/CurrentPrediction";
-import { useState, useRef, useEffect } from 'react';
-import { ChatIcon, DragHandleIcon } from '@chakra-ui/icons';
+import { useState, useRef, useEffect } from "react";
+import { ChatIcon, DragHandleIcon } from "@chakra-ui/icons";
 
 export default function Chat() {
-  const search = useSearch({ from: '/chat' }) as { predictionId: string };
-  const { 
-    messages, 
-    input, 
-    setInput, 
-    isLoading, 
-    handleSendMessage, 
+  const search = useSearch({ from: "/chat" }) as { predictionId: string };
+  const {
+    messages,
+    input,
+    setInput,
+    isLoading,
+    handleSendMessage,
     messagesEndRef,
-    tarotReading
+    tarotReading,
+    handleGenerateQuestion,
+    isGeneratingQuestion,
   } = useChat(search.predictionId);
 
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -23,10 +31,11 @@ export default function Chat() {
   const chatRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
-  const bgColor = useColorModeValue('gray.50', 'gray.900');
-  const chatBgColor = useColorModeValue('white', 'gray.800');
-  const aiMessageBgColor = useColorModeValue('gray.100', 'gray.700');
-  const userMessageBgColor = useColorModeValue('purple.100', 'purple.700');
+  const bgColor = useColorModeValue("gray.50", "gray.900");
+  const chatBgColor = useColorModeValue("white", "gray.800");
+  const aiMessageBgColor = useColorModeValue("gray.100", "gray.700");
+  const userMessageBgColor = useColorModeValue("purple.100", "purple.700");
+  const messageTextColor = useColorModeValue("gray.800", "white"); // Moved here
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -39,42 +48,55 @@ export default function Chat() {
 
     const handleMouseUp = () => {
       isDragging.current = false;
-      document.body.style.userSelect = 'auto';
-      document.body.style.cursor = 'default';
+      document.body.style.userSelect = "auto";
+      document.body.style.cursor = "default";
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
 
   const handleDragStart = () => {
     isDragging.current = true;
-    document.body.style.userSelect = 'none';
-    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "ew-resize";
+  };
+
+  const handleOptionClick = (option: string) => {
+    setInput(option);
+    handleSendMessage();
   };
 
   return (
     <Flex minHeight="calc(100vh - 80px)" bg={bgColor} p={4} position="relative">
       {/* CurrentPrediction */}
-      <Box width={isChatOpen ? `${100 - chatWidth}%` : "100%"} pr={4} transition="width 0.3s ease-in-out" position="relative">
+      <Box
+        width={isChatOpen ? `${100 - chatWidth}%` : "100%"}
+        pr={4}
+        transition="width 0.3s ease-in-out"
+        position="relative"
+      >
         {tarotReading && (
           <CurrentPrediction
             predictionId={search.predictionId}
             prediction={tarotReading.prediction}
             cards={tarotReading.cards}
             question={tarotReading.question}
+            isChatOpen={isChatOpen}
+            handleGenerateQuestion={handleGenerateQuestion}
+            chatIsGeneratingQuestion={isGeneratingQuestion}
           />
         )}
 
         {/* Chat toggle icon */}
         <Flex
           position="absolute"
-          right={-6}
+          right={-8}
           top="50%"
           transform="translateY(-50%)"
           alignItems="center"
@@ -85,14 +107,28 @@ export default function Chat() {
           bg="purple.500"
           color="white"
           borderRadius="full"
-          boxSize={12}
+          boxSize={16}
           flexDirection="column"
-          boxShadow="md"
+          boxShadow="0 0 20px rgba(128, 0, 128, 0.5)"
           transition="all 0.3s"
-          _hover={{ bg: "purple.600" }}
+          _hover={{
+            bg: "purple.600",
+            boxShadow: "0 0 30px rgba(128, 0, 128, 0.7)",
+          }}
+          overflow="hidden"
         >
-          <Icon as={ChatIcon} boxSize={4} mb={1} />
-          <Box fontSize="xs" fontWeight="medium">
+          {/* Crystal ball effect */}
+          <Box
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            borderRadius="full"
+            bg="linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.1) 100%)"
+          />
+          <Icon as={ChatIcon} boxSize={6} mb={1} zIndex={1} />
+          <Box fontSize="xs" fontWeight="medium" zIndex={1}>
             {isChatOpen ? "Close" : "Chat"}
           </Box>
         </Flex>
@@ -111,26 +147,42 @@ export default function Chat() {
         transition="width 0.3s ease-in-out"
         overflow="hidden"
       >
-        <Flex 
-          position="absolute" 
-          left={0} 
-          top={0} 
-          bottom={0} 
-          width="8px" 
+        <Flex
+          position="absolute"
+          left={0}
+          top={0}
+          bottom={0}
+          width="8px"
           cursor="ew-resize"
           onMouseDown={handleDragStart}
           _hover={{ bg: "purple.500" }}
           transition="background-color 0.2s"
         >
-          <Icon as={DragHandleIcon} color="gray.400" position="absolute" left="50%" top="50%" transform="translate(-50%, -50%)" />
+          <Icon
+            as={DragHandleIcon}
+            color="gray.400"
+            position="absolute"
+            left="50%"
+            top="50%"
+            transform="translate(-50%, -50%)"
+          />
         </Flex>
         <Flex height="100%" direction="column" p={4}>
           <Box flex={1} overflowY="auto" mb={4}>
             {messages.map((message, index) => (
-              <Flex key={index} justifyContent={message.is_ai_response ? 'flex-start' : 'flex-end'} mb={2}>
+              <Flex
+                key={message.id}
+                direction="column"
+                alignItems={message.is_ai_response ? "flex-start" : "flex-end"}
+                mb={2}
+              >
                 <Box
-                  bg={message.is_ai_response ? aiMessageBgColor : userMessageBgColor}
-                  color={useColorModeValue('gray.800', 'white')}
+                  bg={
+                    message.is_ai_response
+                      ? aiMessageBgColor
+                      : userMessageBgColor
+                  }
+                  color={messageTextColor} // Use the variable here
                   borderRadius="lg"
                   px={3}
                   py={2}
@@ -138,6 +190,25 @@ export default function Chat() {
                 >
                   {message.message}
                 </Box>
+                {message.is_ai_response &&
+                  message.metadata?.options &&
+                  index === messages.length - 1 && (
+                    <Flex mt={2} flexWrap="wrap" justifyContent="flex-start">
+                      {message.metadata.options.map((option, optionIndex) => (
+                        <Button
+                          key={optionIndex}
+                          size="sm"
+                          colorScheme="purple"
+                          variant="outline"
+                          onClick={() => handleOptionClick(option)}
+                          mr={2}
+                          mb={2}
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </Flex>
+                  )}
               </Flex>
             ))}
             <div ref={messagesEndRef} />
@@ -149,12 +220,16 @@ export default function Chat() {
               placeholder="Type your message..."
               mr={2}
               onKeyPress={(e) => {
-                if (e.key === 'Enter' && !isLoading) {
+                if (e.key === "Enter" && !isLoading) {
                   handleSendMessage();
                 }
               }}
             />
-            <Button onClick={handleSendMessage} colorScheme="purple" isLoading={isLoading}>
+            <Button
+              onClick={handleSendMessage}
+              colorScheme="purple"
+              isLoading={isLoading}
+            >
               Send
             </Button>
           </Flex>

@@ -25,7 +25,7 @@ export default function Prediction() {
         )}
 
         {/* Step 3: Show Loading Animation if prediction is being calculated */}
-        {isLoading && <LoadingAnimation />}
+        {isLoading && <LoadingAnimation question={question} selectedCards={selectedCards} />}
       </Box>
     </VStack>
   );

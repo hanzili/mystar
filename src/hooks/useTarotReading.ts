@@ -79,12 +79,12 @@ export const useTarotReading = () => {
         is_ai_response: true,
         user_id: supabaseUser.id,
       });
-      await saveChatMessage({
-        prediction_id: reading.id!,
-        message: firstMessage,
-        is_ai_response: true,
-        user_id: supabaseUser.id,
-      });
+      // await saveChatMessage({
+      //   prediction_id: reading.id!,
+      //   message: firstMessage,
+      //   is_ai_response: true,
+      //   user_id: supabaseUser.id,
+      // });
       
       toast({
         title: 'Reading Complete',
