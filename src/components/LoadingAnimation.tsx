@@ -58,27 +58,18 @@ const LoadingAnimation: React.FC<{ question: string, selectedCards: SelectedCard
           Consulting the spirits...
         </MotionText>
 
-        <MotionText
+        <Text
           fontSize="xl"
           fontWeight="medium"
           color={questionColor}
           textAlign="center"
-          animate={{ y: [0, -10, 0], opacity: [0.7, 1, 0.7] }}
-          transition="3s infinite"
         >
           "{question}"
-        </MotionText>
+        </Text>
 
         <HStack spacing={4} justify="center">
           {selectedCards.map((card, index) => (
-            <MotionBox
-              key={index}
-              animate={{ 
-                y: [0, -5, 0],
-                rotate: [-5, 5, -5]
-              }}
-              transition="3s infinite"
-            >
+            <Box key={index}>
               <Image 
                 src={tarotCardImages[card.name]} 
                 alt={card.name} 
@@ -87,7 +78,7 @@ const LoadingAnimation: React.FC<{ question: string, selectedCards: SelectedCard
                 borderRadius="md"
                 boxShadow="md"
               />
-            </MotionBox>
+            </Box>
           ))}
         </HStack>
       </VStack>

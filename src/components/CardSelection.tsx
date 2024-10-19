@@ -4,12 +4,18 @@ import { Box, Grid, Heading, Text, VStack, Image, useBreakpointValue, chakra } f
 import { motion } from "framer-motion";
 import { tarotCards, tarotCardImages } from "../utils/tarotCards";
 import { useCardSelection } from "../hooks/useCardSelections";
+import { keyframes } from "@emotion/react";
 
 const MotionBox = chakra(motion.div);
 
 interface CardSelectionProps {
   onSelect: (cards: { name: string; isReversed: boolean }[]) => void;
 }
+
+const glowAnimation = keyframes`
+  0% { box-shadow: 0 0 5px #f6e05e, 0 0 10px #f6e05e, 0 0 15px #f6e05e, 0 0 20px #f6e05e; }
+  100% { box-shadow: 0 0 10px #f6e05e, 0 0 20px #f6e05e, 0 0 30px #f6e05e, 0 0 40px #f6e05e; }
+`;
 
 const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
   const { selectedCards, flippedCards, isRevealing, handleCardClick } =
@@ -48,7 +54,13 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
             position="relative"
             cursor="pointer"
             initial={false}
-            animate={{ rotateY: flippedCards.includes(card) ? 180 : 0 }}
+            animate={{ 
+              rotateY: flippedCards.includes(card) ? 180 : 0,
+              // Add glow animation when selected
+              animation: selectedCards.some((c) => c.name === card)
+                ? `${glowAnimation} 1.5s ease-in-out infinite alternate`
+                : "none"
+            }}
             transition="0.6s"
             style={{ transformStyle: "preserve-3d" }}
             _hover={{ transform: "scale(1.05)" }}

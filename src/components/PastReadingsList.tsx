@@ -1,28 +1,36 @@
-// src/components/PastReadingsList.tsx
+import React from "react";
 import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
   Box,
   Text,
+  VStack,
   useColorModeValue,
+  SimpleGrid,
+  Heading,
   Button,
+  Flex,
+  Image,
+  Badge,
+  Tooltip,
 } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 import { TarotReading } from "../lib/supabase_types";
 import { useNavigate } from "@tanstack/react-router";
+import { MessageCircle } from "lucide-react";
+import { tarotCardImages } from "../utils/tarotCards";
+
+const MotionBox = motion(Box);
 
 interface PastReadingsListProps {
   pastReadings: TarotReading[];
 }
 
-const PastReadingsList: React.FC<PastReadingsListProps> = ({
-  pastReadings,
-}) => {
+const PastReadingsList: React.FC<PastReadingsListProps> = ({ pastReadings }) => {
   const navigate = useNavigate();
-  const borderColor = useColorModeValue("purple.200", "purple.600");
-  const accordionBgColor = useColorModeValue("purple.50", "purple.900");
+  const cardBg = useColorModeValue("white", "gray.700");
+  const cardBorder = useColorModeValue("purple.200", "purple.500");
+  const textColor = useColorModeValue("gray.700", "gray.200");
+  const accentColor = useColorModeValue("purple.500", "purple.300");
+  const summaryBg = useColorModeValue("purple.50", "purple.900");
 
   const handleChatWithAstrologist = (predictionId: string) => {
     navigate({
@@ -31,60 +39,119 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({
     });
   };
 
-  const formatPrediction = (prediction: string) => {
-    try {
-      const { past, present, future } = JSON.parse(prediction);
-      return `${past} ${present} ${future}`;
-    } catch (error) {
-      console.error("Error parsing prediction:", error);
-      return prediction; // Fallback to original prediction if parsing fails
-    }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const renderCards = (cards: string) => {
+    const cardList = cards.split(", ");
+    return (
+      <Flex justifyContent="center" flexWrap="wrap" mt={4}>
+        {cardList.map((card, index) => {
+          const [cardName, orientation] = card.split(" (");
+          const isReversed = orientation === "Reversed)";
+          return (
+            <Tooltip key={index} label={`${cardName}${isReversed ? " (Reversed)" : ""}`} placement="top">
+              <Box
+                position="relative"
+                width="40px"
+                height="60px"
+                m={1}
+                transition="transform 0.3s"
+                _hover={{ transform: "scale(1.1)" }}
+              >
+                <Image
+                  src={tarotCardImages[cardName]}
+                  alt={card}
+                  objectFit="cover"
+                  width="100%"
+                  height="100%"
+                  borderRadius="md"
+                  transform={isReversed ? "rotate(180deg)" : "none"}
+                />
+                {isReversed && (
+                  <Badge
+                    position="absolute"
+                    top="-6px"
+                    right="-6px"
+                    colorScheme="purple"
+                    borderRadius="full"
+                    fontSize="0.6em"
+                    p={1}
+                  >
+                    R
+                  </Badge>
+                )}
+              </Box>
+            </Tooltip>
+          );
+        })}
+      </Flex>
+    );
   };
 
   return (
-    <Accordion allowMultiple>
-      {pastReadings.map((reading, index) => (
-        <AccordionItem
-          key={index}
-          border="1px solid"
-          borderColor={borderColor}
-          borderRadius="md"
-          mb={2}
-        >
-          <h2>
-            <AccordionButton _expanded={{ bg: accordionBgColor }}>
-              <Box flex="1" textAlign="left" fontWeight="medium">
-                {reading.question}
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            <Text>
-              <strong>Cards:</strong> {reading.cards}
-            </Text>
-            <Text mt={2}>
-              <strong>Prediction:</strong> {formatPrediction(reading.prediction)}
-            </Text>
-            <Text
-              mt={2}
-              fontSize="sm"
-              color={useColorModeValue("gray.600", "gray.400")}
+    <VStack spacing={8} align="stretch">
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+        {pastReadings.map((reading, index) => (
+          <MotionBox
+            key={reading.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Box
+              bg={cardBg}
+              borderRadius="lg"
+              borderWidth="1px"
+              borderColor={cardBorder}
+              p={4}
+              boxShadow="md"
+              height="100%"
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              _hover={{ boxShadow: "lg" }}
+              transition="all 0.3s"
             >
-              {new Date(reading.created_at!).toLocaleString()}
-            </Text>
-            <Button
-              mt={4}
-              colorScheme="purple"
-              size="sm"
-              onClick={() => handleChatWithAstrologist(reading.id!)}
-            >
-              In-Depth Analysis
-            </Button>
-          </AccordionPanel>
-        </AccordionItem>
-      ))}
-    </Accordion>
+              <VStack align="stretch" spacing={3}>
+                <Flex justifyContent="space-between" alignItems="center">
+                  <Badge colorScheme="purple" fontSize="0.7em" px={2} py={1}>
+                    {formatDate(reading.created_at!)}
+                  </Badge>
+                  <Button
+                    leftIcon={<MessageCircle size={14} />}
+                    colorScheme="purple"
+                    size="xs"
+                    variant="outline"
+                    onClick={() => handleChatWithAstrologist(reading.id!)}
+                  >
+                    Explore
+                  </Button>
+                </Flex>
+                <Heading as="h3" size="sm" color={accentColor}>
+                  {reading.question}
+                </Heading>
+                {renderCards(reading.cards)}
+                <Box bg={summaryBg} p={2} borderRadius="md">
+                  <Text fontSize="xs" fontWeight="bold" color={accentColor} mb={1}>
+                    Summary:
+                  </Text>
+                  <Text fontSize="xs" color={textColor}>
+                    {JSON.parse(reading.prediction).summary}
+                  </Text>
+                </Box>
+              </VStack>
+            </Box>
+          </MotionBox>
+        ))}
+      </SimpleGrid>
+    </VStack>
   );
 };
 

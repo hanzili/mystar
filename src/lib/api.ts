@@ -26,9 +26,9 @@ export async function generateTarotPrediction(question: string, cards: string, u
         past: data.prediction.past,
         present: data.prediction.present,
         future: data.prediction.future,
+        summary: data.summary,
       },
       firstMessage: data.firstMessage,
-      summary: data.summary,
     };
   } catch (error) {
     console.error('Error generating prediction:', error);

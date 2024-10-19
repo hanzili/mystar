@@ -34,6 +34,7 @@ export interface Prediction {
   past: string;
   present: string;
   future: string;
+  summary: string;
 }
 
 export enum TimeFrame {
