@@ -1,11 +1,11 @@
 import React from "react";
-import { Box, Text, VStack, HStack, Image, useColorModeValue } from "@chakra-ui/react";
+import { Box, Text, VStack, HStack, Image, useColorModeValue, chakra } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { SelectedCard } from "../types/types";
 import { tarotCardImages } from "../utils/tarotCards";
 
-const MotionBox = motion(Box);
-const MotionText = motion(Text);
+const MotionBox = chakra(motion.div);
+const MotionText = chakra(motion.p);
 
 const LoadingAnimation: React.FC<{ question: string, selectedCards: SelectedCard[] }> = ({ question, selectedCards }) => {
   const bgColor = useColorModeValue("rgba(0, 0, 0, 0.05)", "rgba(255, 255, 255, 0.05)");
@@ -29,7 +29,7 @@ const LoadingAnimation: React.FC<{ question: string, selectedCards: SelectedCard
               scale: [1, 1.2, 1],
               rotate: [0, 360]
             }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            transition="4s linear infinite"
           />
           <MotionBox
             position="absolute"
@@ -44,7 +44,7 @@ const LoadingAnimation: React.FC<{ question: string, selectedCards: SelectedCard
               scale: [1.1, 1, 1.1],
               rotate: [360, 0]
             }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            transition="4s linear infinite"
           />
         </Box>
         
@@ -53,7 +53,7 @@ const LoadingAnimation: React.FC<{ question: string, selectedCards: SelectedCard
           fontWeight="bold"
           color={textColor}
           animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition="2s infinite"
         >
           Consulting the spirits...
         </MotionText>
@@ -64,7 +64,7 @@ const LoadingAnimation: React.FC<{ question: string, selectedCards: SelectedCard
           color={questionColor}
           textAlign="center"
           animate={{ y: [0, -10, 0], opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 3, repeat: Infinity }}
+          transition="3s infinite"
         >
           "{question}"
         </MotionText>
@@ -77,11 +77,7 @@ const LoadingAnimation: React.FC<{ question: string, selectedCards: SelectedCard
                 y: [0, -5, 0],
                 rotate: [-5, 5, -5]
               }}
-              transition={{ 
-                duration: 3, 
-                repeat: Infinity, 
-                delay: index * 0.5 
-              }}
+              transition="3s infinite"
             >
               <Image 
                 src={tarotCardImages[card.name]} 

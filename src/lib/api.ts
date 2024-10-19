@@ -1,3 +1,4 @@
+import { CopyMinus } from 'lucide-react';
 import { getSupabaseUserId, getChatMessages, getTarotReading } from './supabase';
 import { TimeFrame } from './supabase_types'; // Make sure to create this enum if it doesn't exist
 
@@ -79,6 +80,19 @@ export async function generateQuestion(supabaseUserId: string, predictionId: str
   try {
     const tarotPrediction = await getTarotReading(supabaseUserId, predictionId);
     const chatHistory = await getChatMessages(supabaseUserId, predictionId);
+
+    const preprocessedTarotPrediction = {
+      prediction: JSON.parse(tarotPrediction?.prediction || '{}'),
+      cards: tarotPrediction?.cards || ''
+    };
+    const preprocessedChatHistory = chatHistory?.map(msg => ({
+      role: msg.is_ai_response ? 'assistant' : 'user',
+      content: msg.message
+    })) || [];
+
+    console.log(preprocessedTarotPrediction);
+    console.log(preprocessedChatHistory);
+    
     const response = await fetch(
       'https://didojidulfoxymrtnesc.supabase.co/functions/v1/generate-question',
       {
@@ -87,7 +101,7 @@ export async function generateQuestion(supabaseUserId: string, predictionId: str
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
-        body: JSON.stringify({ tarotPrediction, chatHistory, timeFrame }),
+        body: JSON.stringify({ tarotPrediction: preprocessedTarotPrediction, chatHistory: preprocessedChatHistory, timeFrame }),
       }
     );
 

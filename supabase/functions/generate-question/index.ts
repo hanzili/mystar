@@ -1,45 +1,50 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import OpenAI from "npm:openai@4"
 
-export const staticPrompt = `You are a tarot reader's assistant. Your task is to generate a thought-provoking question based on a tarot card prediction and previous conversation. The question should be about the {timeFrame} and include three distinct answer options.
+export const staticPrompt = `You are a tarot reader's assistant. Your task is to generate a thought-provoking question based on a tarot card prediction and previous conversation. The question should aim to clarify vague aspects of the prediction for the {timeFrame}, encouraging the user to reflect on deeply personal and private experiences from their past.
 
 Guidelines:
-1. The question must directly relate to the tarot card's interpretation.
-2. Reflect realistic scenarios or decisions relevant to the user's situation.
-3. Provide three distinct and meaningful answer options.
-4. Include emojis in both the question and options for visual engagement.
+1. Identify a vague or symbolic element from the tarot card's interpretation that hasn't been addressed in the chat history.
+2. Formulate a question that prompts the user to reveal a specific, private event or experience from their past that relates to the tarot card's symbolism.
+3. Provide 2 to 4 distinct and specific answer options that represent very different personal experiences. These options MUST be completely mutually exclusive with absolutely NO overlap between them. Ensure users can only select one that truly applies to them.
+4. Each option should touch on sensitive or private information that a person might be hesitant to share publicly.
+5. Include emojis in both the question and options for visual engagement.
+6. Avoid repeating questions or topics that have already been discussed in the chat history.
 
 Here's an example:
 expected input:
 {
   "prediction": {
-    "past": "The High Priestess appeared in your past position, symbolizing intuition and hidden knowledge. This energy suggests that your journey towards PR may have begun in subtle ways before you were fully aware of it.",
-    "present": "Your present is represented by The Chariot, symbolizing willpower and determination. This indicates that you're currently in a phase of active pursuit and focused energy regarding your PR goals.",
-    "future": "Temperance appears in your future position, symbolizing balance and patience. This suggests that the coming phase of your PR journey will require a harmonious blend of action and patience."
+    "past": "The High Priestess appeared in your past position, symbolizing intuition and hidden knowledge. This energy suggests that your journey towards PR may have begun in subtle ways before you were fully aware of it. You might have felt drawn to certain experiences or knowledge that are now proving valuable in your PR process. There's a sense that your subconscious was guiding you, preparing you for this path even when you weren't actively pursuing it.",
+    "present": "Your present is represented by The Chariot, symbolizing willpower and determination. This indicates that you're currently in a phase of active pursuit and focused energy regarding your PR goals. You're likely taking concrete steps towards your objective, facing challenges head-on, and maintaining a strong drive despite any obstacles.",
+    "future": "Temperance appears in your future position, symbolizing balance and patience. This suggests that the coming phase of your PR journey will require a harmonious blend of action and patience. You may find yourself in situations where you need to make measured decisions, balancing different aspects of your life or application process."
   },
-  "previousConversation": [
-    {"role": "user", "content": "I'm worried about my PR application. Can you give me more details about the future card?"},
-    {"role": "assistant", "content": "The Temperance card in your future position suggests a need for balance and patience in your PR journey. It indicates that while progress is being made, it may not always be as rapid as you might wish. This card encourages you to find harmony between different aspects of your life and the application process."}
+  "chatHistory": [
+    {"role": "user", "content": "I'm curious about the intuition mentioned in my past. Can you elaborate?"},
+    {"role": "assistant", "content": "The High Priestess in your past suggests that intuition and hidden knowledge played a role in your journey towards PR. It implies that you may have unconsciously prepared for this path."},
+    {"role": "user", "content": "That's interesting. What about my present situation?"},
+    {"role": "assistant", "content": "The Chariot in your present position indicates strong willpower and determination in pursuing your PR goals. You're likely taking active steps towards your objective."}
   ],
-  "timeFrame": "FUTURE"
+  "timeFrame": "PAST"
 }
 
 expected output:
 {
-  "question": "As Temperance guides your future PR journey, how will you maintain balance while pursuing your goals? ⚖️🏃‍♂️",
+  "question": "The High Priestess symbolizes hidden knowledge. What private experience in your past unexpectedly prepared you for your current PR journey? 🔮🗝️",
   "options": [
-    "Set strict boundaries between work and personal life 🧘‍♀️",
-    "Prioritize tasks flexibly, adjusting as needed 🔄",
-    "Seek mentorship to navigate challenges efficiently 🧭"
+    "A confidential work project that gave you unique insights into the country's culture 🏢🌏",
+    "A personal relationship that ended but taught you valuable lessons about adaptability 💔🌱",
+    "A family secret that motivated you to seek opportunities abroad 🤫✈️",
+    "An undisclosed health challenge that made you reassess your life priorities 🏥🔄"
   ]
 }
 
-Now, based on the provided prediction and conversation, generate a question about the {timeFrame} with three options for answers. Respond only with the JSON object, ensuring it's valid JSON format.`
+Now, based on the provided prediction and conversation, generate a question about the {timeFrame} with 3 to 5 options for answers. The question should help clarify a vague aspect of the prediction that hasn't been addressed in the chat history, focusing on deeply personal and private past experiences. Respond only with the JSON object, ensuring it's valid JSON format.`
 
-export const generateDynamicPrompt = (prediction: string, previousConversation: string, timeFrame: string) => `
+export const generateDynamicPrompt = (prediction: string, chatHistory: string, timeFrame: string) => `
 Tarot Prediction: ${prediction}
 
-Previous Conversation: ${previousConversation}
+Chat History: ${chatHistory}
 
 ${staticPrompt.replace(/{timeFrame}/g, timeFrame.toLowerCase())}`
 
@@ -71,16 +76,16 @@ serve(async (req) => {
   }
 
   try {
-    const { prediction, previousConversation, timeFrame } = await req.json();
+    const { tarotPrediction, chatHistory, timeFrame } = await req.json();
     console.log(`Received request: timeFrame=${timeFrame}`);
 
     const dynamicPrompt = generateDynamicPrompt(
-      JSON.stringify(prediction),
-      JSON.stringify(previousConversation),
+      JSON.stringify(tarotPrediction.prediction),
+      JSON.stringify(chatHistory),
       timeFrame.toLowerCase()
     );
 
-    console.log(`Sending request to OpenAI`);
+    console.log(`Sending request to OpenAI with prompt: ${dynamicPrompt}`);
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [

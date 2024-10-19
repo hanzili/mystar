@@ -26,6 +26,7 @@ interface CurrentPredictionDisplayProps {
   isChatOpen: boolean;
   handleGenerateQuestion: (timeFrame: TimeFrame) => void;
   chatIsGeneratingQuestion: boolean;
+  isLargerThan768: boolean;
 }
 
 const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
@@ -35,6 +36,7 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
   isChatOpen,
   handleGenerateQuestion,
   chatIsGeneratingQuestion,
+  isLargerThan768,
 }) => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
@@ -69,17 +71,15 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
       <Text fontSize="md" color={textColor} lineHeight="tall">
         {content}
       </Text>
-      {isChatOpen && (
-        <Button
-          mt={4}
-          colorScheme="purple"
-          size="sm"
-          onClick={() => handleGenerateQuestion(timeFrame)}
-          isLoading={chatIsGeneratingQuestion}
-        >
-          Discuss
-        </Button>
-      )}
+      <Button
+        mt={4}
+        colorScheme="purple"
+        size="sm"
+        onClick={() => handleGenerateQuestion(timeFrame)}
+        isLoading={chatIsGeneratingQuestion}
+      >
+        Discuss
+      </Button>
     </Box>
   );
 
@@ -144,7 +144,7 @@ const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
 
         <Box>
           <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={4}>
-            Prediction:
+            Results:
           </Text>
           <VStack align="stretch" spacing={4} bg={predictionBgColor} p={6} borderRadius="lg">
             <PredictionSection

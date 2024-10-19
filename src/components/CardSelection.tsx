@@ -1,15 +1,15 @@
 // src/components/CardSelection.tsx
 import React from "react";
-import { Box, Grid, Heading, Text, VStack, Image, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Grid, Heading, Text, VStack, Image, useBreakpointValue, chakra } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { tarotCards, tarotCardImages } from "../utils/tarotCards";
 import { useCardSelection } from "../hooks/useCardSelections";
 
+const MotionBox = chakra(motion.div);
+
 interface CardSelectionProps {
   onSelect: (cards: { name: string; isReversed: boolean }[]) => void;
 }
-
-const MotionBox = motion(Box);
 
 const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
   const { selectedCards, flippedCards, isRevealing, handleCardClick } =
@@ -49,7 +49,7 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
             cursor="pointer"
             initial={false}
             animate={{ rotateY: flippedCards.includes(card) ? 180 : 0 }}
-            transition={{ duration: 0.6 }}
+            transition="0.6s"
             style={{ transformStyle: "preserve-3d" }}
             _hover={{ transform: "scale(1.05)" }}
           >

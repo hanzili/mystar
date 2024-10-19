@@ -5,12 +5,14 @@ import {
   Button,
   useColorModeValue,
   Icon,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { useChat } from "../hooks/useChat";
 import { useSearch } from "@tanstack/react-router";
 import CurrentPrediction from "../components/CurrentPrediction";
 import { useState, useRef, useEffect } from "react";
 import { ChatIcon, DragHandleIcon } from "@chakra-ui/icons";
+import { TimeFrame } from "../lib/supabase_types";
 
 export default function Chat() {
   const search = useSearch({ from: "/chat" }) as { predictionId: string };
@@ -36,6 +38,8 @@ export default function Chat() {
   const aiMessageBgColor = useColorModeValue("gray.100", "gray.700");
   const userMessageBgColor = useColorModeValue("purple.100", "purple.700");
   const messageTextColor = useColorModeValue("gray.800", "white"); // Moved here
+
+  const [isLargerThan768] = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -72,12 +76,17 @@ export default function Chat() {
     handleSendMessage();
   };
 
+  const handleDiscuss = (timeFrame: TimeFrame) => {
+    setIsChatOpen(true);
+    handleGenerateQuestion(timeFrame);
+  };
+
   return (
     <Flex minHeight="calc(100vh - 80px)" bg={bgColor} p={4} position="relative">
       {/* CurrentPrediction */}
       <Box
-        width={isChatOpen ? `${100 - chatWidth}%` : "100%"}
-        pr={4}
+        width={isLargerThan768 && isChatOpen ? `${100 - chatWidth}%` : "100%"}
+        pr={isLargerThan768 ? 4 : 0}
         transition="width 0.3s ease-in-out"
         position="relative"
       >
@@ -88,17 +97,17 @@ export default function Chat() {
             cards={tarotReading.cards}
             question={tarotReading.question}
             isChatOpen={isChatOpen}
-            handleGenerateQuestion={handleGenerateQuestion}
+            handleGenerateQuestion={handleDiscuss}
             chatIsGeneratingQuestion={isGeneratingQuestion}
+            isLargerThan768={isLargerThan768}
           />
         )}
 
         {/* Chat toggle icon */}
         <Flex
-          position="absolute"
-          right={-8}
-          top="50%"
-          transform="translateY(-50%)"
+          position="fixed"
+          right={4}
+          bottom={4}
           alignItems="center"
           justifyContent="center"
           cursor="pointer"
@@ -140,34 +149,43 @@ export default function Chat() {
         position="fixed"
         right={0}
         top={0}
-        width={isChatOpen ? `${chatWidth}%` : "0%"}
+        width={isLargerThan768 ? (isChatOpen ? `${chatWidth}%` : "0%") : "100%"}
         height="100%"
         bg={chatBgColor}
         boxShadow="md"
         transition="width 0.3s ease-in-out"
         overflow="hidden"
+        zIndex={3}
+        display={isLargerThan768 || isChatOpen ? "block" : "none"}
       >
-        <Flex
-          position="absolute"
-          left={0}
-          top={0}
-          bottom={0}
-          width="8px"
-          cursor="ew-resize"
-          onMouseDown={handleDragStart}
-          _hover={{ bg: "purple.500" }}
-          transition="background-color 0.2s"
-        >
-          <Icon
-            as={DragHandleIcon}
-            color="gray.400"
+        {isLargerThan768 && (
+          <Flex
             position="absolute"
-            left="50%"
-            top="50%"
-            transform="translate(-50%, -50%)"
-          />
-        </Flex>
+            left={0}
+            top={0}
+            bottom={0}
+            width="8px"
+            cursor="ew-resize"
+            onMouseDown={handleDragStart}
+            _hover={{ bg: "purple.500" }}
+            transition="background-color 0.2s"
+          >
+            <Icon
+              as={DragHandleIcon}
+              color="gray.400"
+              position="absolute"
+              left="50%"
+              top="50%"
+              transform="translate(-50%, -50%)"
+            />
+          </Flex>
+        )}
         <Flex height="100%" direction="column" p={4}>
+          <Flex justifyContent="flex-end" mb={4}>
+            <Button onClick={() => setIsChatOpen(false)} size="sm">
+              Close
+            </Button>
+          </Flex>
           <Box flex={1} overflowY="auto" mb={4}>
             {messages.map((message, index) => (
               <Flex
@@ -203,6 +221,12 @@ export default function Chat() {
                           onClick={() => handleOptionClick(option)}
                           mr={2}
                           mb={2}
+                          maxWidth="70%"
+                          whiteSpace="normal"
+                          height="auto"
+                          textAlign="left"
+                          lineHeight="short"
+                          p={1.5}
                         >
                           {option}
                         </Button>
