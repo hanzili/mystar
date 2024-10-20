@@ -11,6 +11,7 @@ export interface TarotReading {
   cards: string;
   prediction: string;
   created_at?: string;
+  share_id?: string;
 }
 
 export interface ChatMessage {

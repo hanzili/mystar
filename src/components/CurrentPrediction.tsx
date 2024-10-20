@@ -10,11 +10,12 @@ import {
   VStack,
   HStack,
   Container,
+  Flex,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SelectedCard, Prediction } from "../types/types";
 import { tarotCardImages } from "../utils/tarotCards";
-import { Clock, Sun, Sunrise } from "lucide-react";
+import { Clock, Sun, Sunrise, ShareIcon } from "lucide-react";
 import { TimeFrame } from "../lib/supabase_types";
 
 interface CurrentPredictionProps {
@@ -27,6 +28,9 @@ interface CurrentPredictionProps {
   chatIsGeneratingQuestion: boolean;
   isLargerThan768: boolean;
   availableWidth: number;
+  isOwner: boolean;
+  shareUrl: string | null;
+  handleShare: () => void;
 }
 
 const MotionBox = motion(Box);
@@ -40,6 +44,9 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
   chatIsGeneratingQuestion,
   isLargerThan768,
   availableWidth,
+  isOwner,
+  shareUrl,
+  handleShare,
 }) => {
   const headingColor = useColorModeValue("purple.600", "purple.300");
   const textColor = useColorModeValue("gray.700", "gray.200");
@@ -48,13 +55,35 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
   const predictionBgColor = useColorModeValue("purple.50", "gray.800");
 
   const timeFrames = [
-    { title: "Past", content: prediction.past, icon: Clock, timeFrame: TimeFrame.PAST },
-    { title: "Present", content: prediction.present, icon: Sun, timeFrame: TimeFrame.PRESENT },
-    { title: "Future", content: prediction.future, icon: Sunrise, timeFrame: TimeFrame.FUTURE },
+    {
+      title: "Past",
+      content: prediction.past,
+      icon: Clock,
+      timeFrame: TimeFrame.PAST,
+    },
+    {
+      title: "Present",
+      content: prediction.present,
+      icon: Sun,
+      timeFrame: TimeFrame.PRESENT,
+    },
+    {
+      title: "Future",
+      content: prediction.future,
+      icon: Sunrise,
+      timeFrame: TimeFrame.FUTURE,
+    },
   ];
 
   // Determine the number of columns based on available width
   const columns = isLargerThan768 && availableWidth > 66 ? 3 : 1;
+
+  const handleCopyShareUrl = () => {
+    if (shareUrl) {
+      navigator.clipboard.writeText(shareUrl);
+      // You might want to show a toast notification here
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -66,10 +95,21 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
         transition={{ duration: 0.5 }}
       >
         <VStack spacing={6} align="stretch">
-          <Heading as="h2" size="lg" color={headingColor} textAlign="center">
-            Your Tarot Prediction
-          </Heading>
-          
+          <Flex justifyContent="space-between" alignItems="center" flexWrap="wrap">
+            <Heading as="h2" size="lg" color={headingColor}>
+              {isOwner ? "Your Tarot Prediction" : "Your Friend's Tarot Prediction"}
+            </Heading>
+            {isOwner && (
+              <Button
+                leftIcon={<ShareIcon />}
+                colorScheme="purple"
+                onClick={handleShare}
+              >
+                Share
+              </Button>
+            )}
+          </Flex>
+
           <MotionBox
             bg={predictionBgColor}
             p={6}
@@ -125,28 +165,42 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
                       alt={cards[index].name}
                       height="200px"
                       objectFit="contain"
-                      transform={cards[index].isReversed ? "rotate(180deg)" : "none"}
+                      transform={
+                        cards[index].isReversed ? "rotate(180deg)" : "none"
+                      }
                     />
-                    <Text fontSize="sm" fontWeight="semibold" mt={2} color={headingColor}>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="semibold"
+                      mt={2}
+                      color={headingColor}
+                    >
                       {cards[index].name}
                     </Text>
                     <Text fontSize="xs" color={textColor} fontStyle="italic">
                       {cards[index].isReversed ? "(Reversed)" : "(Upright)"}
                     </Text>
                   </Box>
-                  <Text fontSize="sm" color={textColor} lineHeight="tall" flex={1}>
+                  <Text
+                    fontSize="sm"
+                    color={textColor}
+                    lineHeight="tall"
+                    flex={1}
+                  >
                     {tf.content}
                   </Text>
                 </VStack>
-                <Button
-                  colorScheme="purple"
-                  size="sm"
-                  onClick={() => handleGenerateQuestion(tf.timeFrame)}
-                  isLoading={chatIsGeneratingQuestion}
-                  mt={4}
-                >
-                  Discuss {tf.title}
-                </Button>
+                {isOwner && (
+                  <Button
+                    colorScheme="purple"
+                    size="sm"
+                    onClick={() => handleGenerateQuestion(tf.timeFrame)}
+                    isLoading={chatIsGeneratingQuestion}
+                    mt={4}
+                  >
+                    Discuss {tf.title}
+                  </Button>
+                )}
               </MotionBox>
             ))}
           </SimpleGrid>

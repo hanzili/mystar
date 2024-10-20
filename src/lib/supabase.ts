@@ -53,7 +53,6 @@ export async function getSupabaseUserId(clerkUserId: string): Promise<string | n
 
   return data?.id || null;
 }
-
 // Tarot reading-related functions
 export async function saveTarotReading(reading: Omit<TarotReading, 'id' | 'created_at'>): Promise<TarotReading> {
   const { data, error } = await supabase
@@ -77,7 +76,6 @@ export async function getTarotReading(userId: string, predictionId: string): Pro
   const { data, error } = await supabase
     .from('tarot_readings')
     .select('*')
-    .eq('user_id', userId)
     .eq('id', predictionId)
     .single();
 
@@ -86,9 +84,28 @@ export async function getTarotReading(userId: string, predictionId: string): Pro
     throw error;
   }
 
+  // Check if the reading belongs to the user
+  if (data && data.user_id !== userId) {
+    return null;
+  }
+
   return data as TarotReading | null;
 }
 
+export async function getTarotReadingByShareId(shareId: string): Promise<TarotReading | null> {
+  const { data, error } = await supabase
+    .from('tarot_readings')
+    .select('*')
+    .eq('share_id', shareId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching tarot reading by share ID:', error);
+    throw error;
+  }
+
+  return data as TarotReading | null;
+}
 
 export async function getTarotReadings(userId: string): Promise<TarotReading[]> {
   const { data, error } = await supabase
@@ -103,6 +120,24 @@ export async function getTarotReadings(userId: string): Promise<TarotReading[]> 
   }
 
   return data as TarotReading[];
+}
+
+export async function generateShareId(userId: string, predictionId: string): Promise<string | null> {
+  const shareId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  
+  const { data, error } = await supabase
+    .from('tarot_readings')
+    .update({ share_id: shareId })
+    .eq('id', predictionId)
+    .eq('user_id', userId)
+    .select('share_id');
+
+  if (error) {
+    console.error('Error generating share ID:', error);
+    return null;
+  }
+
+  return data?.[0]?.share_id || null;
 }
 
 // Chat message-related functions
@@ -123,7 +158,6 @@ export async function saveChatMessage(message: Omit<ChatMessage, 'id' | 'created
 
   return data[0] as ChatMessage;
 }
-
 
 export async function getChatMessages(userId: string, predictionId: string): Promise<ChatMessage[]> {
   const { data, error } = await supabase

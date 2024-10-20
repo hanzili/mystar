@@ -85,7 +85,6 @@ const LoadingAnimation: React.FC<{
             position="absolute"
             width="100%"
             height="100%"
-            backfaceVisibility="hidden"
             animation={`${glowAnimation} 2s infinite`}
           >
             <Image
@@ -101,7 +100,6 @@ const LoadingAnimation: React.FC<{
             position="absolute"
             width="100%"
             height="100%"
-            backfaceVisibility="hidden"
             transform="rotateY(180deg)"
           >
             <Image

@@ -6,6 +6,8 @@ import {
   getChatMessages,
   saveChatMessage,
   getTarotReading,
+  generateShareId,
+  getTarotReadingByShareId,
 } from "../lib/supabase";
 import { chatWithAIAstrologist, generateQuestion } from "../lib/api";
 import { ChatMessage, TarotReading } from "../types/types";
@@ -13,7 +15,7 @@ import { useUser } from "@clerk/clerk-react";
 import { readingToFrontendFormat } from "../utils/utils";
 import { TimeFrame } from "../lib/supabase_types";
 
-export const useChat = (predictionId: string) => {
+export const useChat = (predictionId: string, shareId?: string) => {
   const { user } = useUser();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -22,13 +24,17 @@ export const useChat = (predictionId: string) => {
   const toast = useToast();
   const [tarotReading, setTarotReading] = useState<TarotReading | null>(null);
   const [isGeneratingQuestion, setIsGeneratingQuestion] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && predictionId) {
       loadChatMessages();
       loadTarotReading();
+    } else if (shareId) {
+      loadSharedTarotReading();
     }
-  }, [user, predictionId]);
+  }, [user, predictionId, shareId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,8 +70,14 @@ export const useChat = (predictionId: string) => {
         const supabaseUserId = await getSupabaseUserId(user.id);
         if (supabaseUserId) {
           const reading = await getTarotReading(supabaseUserId, predictionId);
-          const frontendReading = readingToFrontendFormat(reading);
-          setTarotReading(frontendReading);
+          if (reading) {
+            const frontendReading = readingToFrontendFormat(reading);
+            setTarotReading(frontendReading);
+            setIsOwner(true);
+            setShareUrl(reading.share_id ? `${window.location.origin}/chat?shareId=${reading.share_id}` : null);
+          } else {
+            setIsOwner(false);
+          }
         }
       } catch (error) {
         console.error("Error loading tarot reading:", error);
@@ -77,6 +89,26 @@ export const useChat = (predictionId: string) => {
           isClosable: true,
         });
       }
+    }
+  };
+
+  const loadSharedTarotReading = async () => {
+    try {
+      const reading = await getTarotReadingByShareId(shareId!);
+      if (reading) {
+        const frontendReading = readingToFrontendFormat(reading);
+        setTarotReading(frontendReading);
+        setIsOwner(false);
+      }
+    } catch (error) {
+      console.error("Error loading shared tarot reading:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load shared tarot reading",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -198,6 +230,45 @@ export const useChat = (predictionId: string) => {
     }
   };
 
+  const handleShare = async () => {
+    if (user && predictionId) {
+      try {
+        const supabaseUserId = await getSupabaseUserId(user.id);
+        if (supabaseUserId) {
+          let shareId = shareUrl ? new URL(shareUrl).searchParams.get('shareId') : null;
+
+          if (!shareId) {
+            shareId = await generateShareId(supabaseUserId, predictionId);
+          }
+
+          if (shareId) {
+            const newShareUrl = `${window.location.origin}/chat?shareId=${shareId}`;
+            setShareUrl(newShareUrl);
+            await navigator.clipboard.writeText(newShareUrl);
+            toast({
+              title: "Share URL Copied",
+              description: "Share URL has been copied to clipboard",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            });
+          } else {
+            throw new Error("Failed to generate or retrieve share ID");
+          }
+        }
+      } catch (error) {
+        console.error("Error sharing prediction:", error);
+        toast({
+          title: "Error",
+          description: "Failed to share prediction",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    }
+  };
+
   return {
     messages,
     input,
@@ -209,5 +280,8 @@ export const useChat = (predictionId: string) => {
     handleQuestionGenerated,
     handleGenerateQuestion,
     isGeneratingQuestion,
+    isOwner,
+    shareUrl,
+    handleShare,
   };
 };
