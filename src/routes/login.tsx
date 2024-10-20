@@ -1,8 +1,6 @@
-import React from 'react'
 import { Box, Button, Heading, Text, VStack, Image, Flex, useColorModeValue, Stack } from '@chakra-ui/react'
 import { SignInButton, useUser } from '@clerk/clerk-react'
 import { useNavigate } from '@tanstack/react-router'
-import { Sparkles } from 'lucide-react'
 
 export default function Login() {
   const { isSignedIn } = useUser()
@@ -26,7 +24,7 @@ export default function Login() {
           <Flex align="center" width="100%" justifyContent={{ base: 'center', md: 'flex-start' }}>
             <Image src="/logo.png" alt="Mystic Tarot Logo" boxSize={{ base: "50px", md: "60px" }} mr={4} />
             <Heading as="h1" size={{ base: "xl", md: "2xl" }} color={headingColor}>
-              Mystic Tarot
+              Mystar
             </Heading>
           </Flex>
           <Heading as="h2" size={{ base: "lg", md: "xl" }} color={textColor} textAlign={{ base: 'center', md: 'left' }} width="100%">
@@ -83,12 +81,14 @@ export default function Login() {
       </Box>
       <Box flex="1" p={4} display={{ base: 'none', lg: 'flex' }} alignItems="center" justifyContent="center">
         <Image
-          src="https://images.unsplash.com/photo-1632292220916-e9c34dd75db2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-          alt="Tarot cards"
-          objectFit="cover"
+          src="/deck.png"
+          alt="deck"
+          objectFit="contain"
           borderRadius="lg"
           boxShadow="2xl"
-          maxWidth="100%"
+          maxWidth="80%"
+          maxHeight="80%"
+          width="auto"
           height="auto"
         />
       </Box>

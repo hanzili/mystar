@@ -6,12 +6,10 @@ import {
   Image,
   useColorModeValue,
   SimpleGrid,
-  Flex,
   Button,
   VStack,
   HStack,
   Container,
-  Divider,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SelectedCard, Prediction } from "../types/types";
@@ -28,6 +26,7 @@ interface CurrentPredictionProps {
   handleGenerateQuestion: (timeFrame: TimeFrame) => void;
   chatIsGeneratingQuestion: boolean;
   isLargerThan768: boolean;
+  availableWidth: number;
 }
 
 const MotionBox = motion(Box);
@@ -39,6 +38,8 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
   question,
   handleGenerateQuestion,
   chatIsGeneratingQuestion,
+  isLargerThan768,
+  availableWidth,
 }) => {
   const headingColor = useColorModeValue("purple.600", "purple.300");
   const textColor = useColorModeValue("gray.700", "gray.200");
@@ -52,17 +53,20 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
     { title: "Future", content: prediction.future, icon: Sunrise, timeFrame: TimeFrame.FUTURE },
   ];
 
+  // Determine the number of columns based on available width
+  const columns = isLargerThan768 && availableWidth > 66 ? 3 : 1;
+
   return (
     <AnimatePresence>
       <MotionContainer
-        maxW="container.xl"
-        py={8}
+        maxW={columns === 1 ? "container.sm" : "container.xl"}
+        py={5}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <VStack spacing={8} align="stretch">
-          <Heading as="h2" size="xl" color={headingColor} textAlign="center">
+        <VStack spacing={6} align="stretch">
+          <Heading as="h2" size="lg" color={headingColor} textAlign="center">
             Your Tarot Prediction
           </Heading>
           
@@ -83,7 +87,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
             </Text>
           </MotionBox>
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+          <SimpleGrid columns={columns} spacing={6}>
             {timeFrames.map((tf, index) => (
               <MotionBox
                 key={tf.title}
@@ -91,14 +95,14 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
                 p={6}
                 borderRadius="lg"
                 boxShadow="md"
-                display="flex"
-                flexDirection="column"
-                height="100%"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                display="flex"
+                flexDirection="column"
+                height="100%"
               >
-                <VStack align="stretch" spacing={4} flex={1}>
+                <VStack spacing={4} align="stretch" flex={1}>
                   <HStack justify="center">
                     <Box as={tf.icon} size={24} color={headingColor} />
                     <Text fontSize="xl" fontWeight="bold" color={headingColor}>
@@ -119,7 +123,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
                     <Image
                       src={tarotCardImages[cards[index].name]}
                       alt={cards[index].name}
-                      boxSize="120px"
+                      height="200px"
                       objectFit="contain"
                       transform={cards[index].isReversed ? "rotate(180deg)" : "none"}
                     />

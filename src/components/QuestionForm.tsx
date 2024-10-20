@@ -61,6 +61,7 @@ const questionsByTheme = {
     "🤗 What can I do to strengthen my friendships?",
     "💑 How can I maintain a healthy work-life balance?",
     "🚩 What red flags should I be aware of in my relationships?",
+    "🛏️ When will I get laid?",
   ],
   "Personal Growth": [
     "🌱 What should I focus on for personal growth?",

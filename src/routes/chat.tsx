@@ -37,13 +37,22 @@ export default function Chat() {
   const chatBgColor = useColorModeValue("white", "gray.800");
   const aiMessageBgColor = useColorModeValue("gray.100", "gray.700");
   const userMessageBgColor = useColorModeValue("purple.100", "purple.700");
-  const messageTextColor = useColorModeValue("gray.800", "white"); // Moved here
+  const messageTextColor = useColorModeValue("gray.800", "white");
 
   const [isLargerThan768] = useMediaQuery("(min-width: 768px)");
+  const [availableWidth, setAvailableWidth] = useState(100);
+
+  useEffect(() => {
+    if (isLargerThan768 && isChatOpen) {
+      setAvailableWidth(100 - chatWidth);
+    } else {
+      setAvailableWidth(100);
+    }
+  }, [isLargerThan768, isChatOpen, chatWidth]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging.current && chatRef.current) {
+      if (isDragging.current && chatRef.current && isLargerThan768) {
         e.preventDefault();
         const newWidth = 100 - (e.clientX / window.innerWidth) * 100;
         setChatWidth(Math.min(Math.max(newWidth, 20), 80));
@@ -63,12 +72,14 @@ export default function Chat() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, []);
+  }, [isLargerThan768]);
 
   const handleDragStart = () => {
-    isDragging.current = true;
-    document.body.style.userSelect = "none";
-    document.body.style.cursor = "ew-resize";
+    if (isLargerThan768) {
+      isDragging.current = true;
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = "ew-resize";
+    }
   };
 
   const handleOptionClick = (option: string) => {
@@ -100,6 +111,7 @@ export default function Chat() {
             handleGenerateQuestion={handleDiscuss}
             chatIsGeneratingQuestion={isGeneratingQuestion}
             isLargerThan768={isLargerThan768}
+            availableWidth={availableWidth}
           />
         )}
 
@@ -156,7 +168,7 @@ export default function Chat() {
         transition="width 0.3s ease-in-out"
         overflow="hidden"
         zIndex={3}
-        display={isLargerThan768 || isChatOpen ? "block" : "none"}
+        display={isChatOpen ? "block" : "none"}
       >
         {isLargerThan768 && (
           <Flex
@@ -200,7 +212,7 @@ export default function Chat() {
                       ? aiMessageBgColor
                       : userMessageBgColor
                   }
-                  color={messageTextColor} // Use the variable here
+                  color={messageTextColor}
                   borderRadius="lg"
                   px={3}
                   py={2}

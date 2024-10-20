@@ -31,6 +31,8 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({ pastReadings }) => 
   const textColor = useColorModeValue("gray.700", "gray.200");
   const accentColor = useColorModeValue("purple.500", "purple.300");
   const summaryBg = useColorModeValue("purple.50", "purple.900");
+  const badgeBg = useColorModeValue("purple.100", "purple.700");
+  const badgeColor = useColorModeValue("purple.800", "purple.100");
 
   const handleChatWithAstrologist = (predictionId: string) => {
     navigate({
@@ -79,10 +81,12 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({ pastReadings }) => 
                     position="absolute"
                     top="-6px"
                     right="-6px"
-                    colorScheme="purple"
+                    bg={badgeBg}
+                    color={badgeColor}
                     borderRadius="full"
                     fontSize="0.6em"
                     p={1}
+                    boxShadow="0 0 0 2px rgba(0, 0, 0, 0.1)"
                   >
                     R
                   </Badge>
