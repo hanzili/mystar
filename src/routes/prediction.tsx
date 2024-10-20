@@ -20,12 +20,16 @@ export default function Prediction() {
         {!question && <QuestionForm onSubmit={handleQuestionSubmit} />}
         
         {/* Step 2: Show Card Selection after Question */}
-        {question && !selectedCards.length && (
+        {question && (
           <CardSelection onSelect={handleCardSelection} />
         )}
 
         {/* Step 3: Show Loading Animation if prediction is being calculated */}
-        {isLoading && <LoadingAnimation question={question} selectedCards={selectedCards} />}
+        {isLoading && (
+          <Box position="fixed" top="0" left="0" right="0" bottom="0" zIndex="9999">
+            <LoadingAnimation question={question} selectedCards={selectedCards} />
+          </Box>
+        )}
       </Box>
     </VStack>
   );

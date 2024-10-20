@@ -1,24 +1,25 @@
-// src/components/CurrentPredictionDisplay.tsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Box,
   Heading,
   Text,
-  VStack,
-  HStack,
   Image,
   useColorModeValue,
+  SimpleGrid,
+  Flex,
+  Button,
+  VStack,
+  HStack,
   Container,
   Divider,
-  Flex,
-  Button
 } from "@chakra-ui/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { SelectedCard, Prediction } from "../types/types";
 import { tarotCardImages } from "../utils/tarotCards";
 import { Clock, Sun, Sunrise } from "lucide-react";
 import { TimeFrame } from "../lib/supabase_types";
 
-interface CurrentPredictionDisplayProps {
+interface CurrentPredictionProps {
   prediction: Prediction;
   predictionId: string;
   cards: SelectedCard[];
@@ -29,161 +30,142 @@ interface CurrentPredictionDisplayProps {
   isLargerThan768: boolean;
 }
 
-const CurrentPrediction: React.FC<CurrentPredictionDisplayProps> = ({
+const MotionBox = motion(Box);
+const MotionContainer = motion(Container);
+
+const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
   prediction,
   cards,
   question,
-  isChatOpen,
   handleGenerateQuestion,
   chatIsGeneratingQuestion,
-  isLargerThan768,
 }) => {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-
   const headingColor = useColorModeValue("purple.600", "purple.300");
   const textColor = useColorModeValue("gray.700", "gray.200");
   const cardBgColor = useColorModeValue("white", "gray.700");
   const cardBorderColor = useColorModeValue("purple.200", "purple.500");
   const predictionBgColor = useColorModeValue("purple.50", "gray.800");
 
-
-  const getHighlightColor = (index: number) => {
-    if (hoveredCard === index) {
-      return useColorModeValue("yellow.100", "yellow.700");
-    }
-    return "transparent";
-  };
-
-  const PredictionSection = ({ title, content, icon, index, timeFrame }: { title: string, content: string, icon: React.ElementType, index: number, timeFrame: TimeFrame }) => (
-    <Box
-      bg={getHighlightColor(index)}
-      p={4}
-      borderRadius="md"
-      transition="background-color 0.3s"
-      boxShadow="md"
-    >
-      <Flex align="center" mb={2}>
-        <Box as={icon} size={24} color={headingColor} mr={2} />
-        <Text fontSize="lg" fontWeight="bold" color={headingColor}>
-          {title}
-        </Text>
-      </Flex>
-      <Text fontSize="md" color={textColor} lineHeight="tall">
-        {content}
-      </Text>
-      <Button
-        mt={4}
-        colorScheme="purple"
-        size="sm"
-        onClick={() => handleGenerateQuestion(timeFrame)}
-        isLoading={chatIsGeneratingQuestion}
-      >
-        Discuss
-      </Button>
-    </Box>
-  );
+  const timeFrames = [
+    { title: "Past", content: prediction.past, icon: Clock, timeFrame: TimeFrame.PAST },
+    { title: "Present", content: prediction.present, icon: Sun, timeFrame: TimeFrame.PRESENT },
+    { title: "Future", content: prediction.future, icon: Sunrise, timeFrame: TimeFrame.FUTURE },
+  ];
 
   return (
-    <Container maxW="4xl" py={8}>
-      <VStack spacing={8} align="stretch">
-        <Heading as="h2" size="xl" color={headingColor} textAlign="center">
-          Your Tarot Prediction
-        </Heading>
-        
-        <Box bg={predictionBgColor} p={6} borderRadius="lg" boxShadow="md">
-          <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={4}>
-            Question:
-          </Text>
-          <Text fontSize="lg" color={textColor}>
-            {question}
-          </Text>
-        </Box>
-
-        <Box>
-          <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={4}>
-            Your Cards:
-          </Text>
-          <HStack justify="center" spacing={6} wrap="wrap">
-            {cards.map((card, index) => (
-              <Box
-                key={index}
-                bg={cardBgColor}
-                borderRadius="lg"
-                p={4}
-                textAlign="center"
-                boxShadow="md"
-                border="1px solid"
-                borderColor={cardBorderColor}
-                transition="all 0.3s"
-                _hover={{ transform: "translateY(-5px)", boxShadow: "lg" }}
-                onMouseEnter={() => setHoveredCard(index)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <Box position="relative" width="150px" height="150px">
-                  <Image
-                    src={tarotCardImages[card.name]}
-                    alt={card.name}
-                    boxSize="150px"
-                    objectFit="contain"
-                    transform={card.isReversed ? "rotate(180deg)" : "none"}
-                    transition="transform 0.3s"
-                  />
-                </Box>
-                <Text fontSize="md" fontWeight="semibold" mt={3} color={headingColor}>
-                  {card.name}
-                </Text>
-                <Text fontSize="sm" color={textColor} fontStyle="italic">
-                  {card.isReversed ? "(Reversed)" : "(Upright)"}
-                </Text>
-              </Box>
-            ))}
-          </HStack>
-        </Box>
-
-        <Divider />
-
-        <Box>
-          <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={4}>
-            Results:
-          </Text>
-          <VStack align="stretch" spacing={4} bg={predictionBgColor} p={6} borderRadius="lg">
-            <PredictionSection
-              title="Past"
-              content={prediction.past}
-              icon={Clock}
-              index={0}
-              timeFrame={TimeFrame.PAST}
-            />
-            <PredictionSection
-              title="Present"
-              content={prediction.present}
-              icon={Sun}
-              index={1}
-              timeFrame={TimeFrame.PRESENT}
-            />
-            <PredictionSection
-              title="Future"
-              content={prediction.future}
-              icon={Sunrise}
-              index={2}
-              timeFrame={TimeFrame.FUTURE}
-            />
-          </VStack>
-        </Box>
-
-        {/* <Box textAlign="center" mt={6}>
-          <Button
-            onClick={handleChatWithAstrologist}
-            colorScheme="teal"
-            size="lg"
-            _hover={{ transform: "translateY(-2px)", boxShadow: "lg" }}
-            transition="all 0.2s"
+    <AnimatePresence>
+      <MotionContainer
+        maxW="container.xl"
+        py={8}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <VStack spacing={8} align="stretch">
+          <Heading as="h2" size="xl" color={headingColor} textAlign="center">
+            Your Tarot Prediction
+          </Heading>
+          
+          <MotionBox
+            bg={predictionBgColor}
+            p={6}
+            borderRadius="lg"
+            boxShadow="md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Chat with AI Astrologist
-          </Button>
-        </Box> */}
-      </VStack>
-    </Container>
+            <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={2}>
+              Question:
+            </Text>
+            <Text fontSize="lg" color={textColor}>
+              {question}
+            </Text>
+          </MotionBox>
+
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+            {timeFrames.map((tf, index) => (
+              <MotionBox
+                key={tf.title}
+                bg={predictionBgColor}
+                p={6}
+                borderRadius="lg"
+                boxShadow="md"
+                display="flex"
+                flexDirection="column"
+                height="100%"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+              >
+                <VStack align="stretch" spacing={4} flex={1}>
+                  <HStack justify="center">
+                    <Box as={tf.icon} size={24} color={headingColor} />
+                    <Text fontSize="xl" fontWeight="bold" color={headingColor}>
+                      {tf.title}
+                    </Text>
+                  </HStack>
+                  <Box
+                    bg={cardBgColor}
+                    borderRadius="lg"
+                    p={4}
+                    textAlign="center"
+                    boxShadow="md"
+                    border="1px solid"
+                    borderColor={cardBorderColor}
+                    width="fit-content"
+                    mx="auto"
+                  >
+                    <Image
+                      src={tarotCardImages[cards[index].name]}
+                      alt={cards[index].name}
+                      boxSize="120px"
+                      objectFit="contain"
+                      transform={cards[index].isReversed ? "rotate(180deg)" : "none"}
+                    />
+                    <Text fontSize="sm" fontWeight="semibold" mt={2} color={headingColor}>
+                      {cards[index].name}
+                    </Text>
+                    <Text fontSize="xs" color={textColor} fontStyle="italic">
+                      {cards[index].isReversed ? "(Reversed)" : "(Upright)"}
+                    </Text>
+                  </Box>
+                  <Text fontSize="sm" color={textColor} lineHeight="tall" flex={1}>
+                    {tf.content}
+                  </Text>
+                </VStack>
+                <Button
+                  colorScheme="purple"
+                  size="sm"
+                  onClick={() => handleGenerateQuestion(tf.timeFrame)}
+                  isLoading={chatIsGeneratingQuestion}
+                  mt={4}
+                >
+                  Discuss {tf.title}
+                </Button>
+              </MotionBox>
+            ))}
+          </SimpleGrid>
+
+          <MotionBox
+            bg={predictionBgColor}
+            p={6}
+            borderRadius="lg"
+            boxShadow="md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={4}>
+              Result
+            </Text>
+            <Text fontSize="md" color={textColor} lineHeight="tall">
+              {prediction.summary}
+            </Text>
+          </MotionBox>
+        </VStack>
+      </MotionContainer>
+    </AnimatePresence>
   );
 };
 
