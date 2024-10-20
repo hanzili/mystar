@@ -18,6 +18,14 @@ import { useNavigate } from "@tanstack/react-router";
 
 export default function Chat() {
   const search = useSearch({ from: "/chat" }) as { predictionId: string; shareId?: string };
+  const { isSignedIn, isLoaded } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn && !search.shareId) {
+      navigate({ to: "/" });
+    }
+  }, [isLoaded, isSignedIn, search.shareId, navigate]);
 
   const {
     messages,

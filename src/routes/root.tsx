@@ -25,7 +25,11 @@ export default function Root() {
   const headerBg = useColorModeValue("white", "gray.800");
 
   React.useEffect(() => {
-    if (isLoaded && !isSignedIn) {
+    const currentPath = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+    const hasShareId = searchParams.has('shareId');
+  
+    if (isLoaded && !isSignedIn && currentPath !== "/" && !hasShareId) {
       navigate({ to: "/" });
     }
   }, [isLoaded, isSignedIn, navigate]);
