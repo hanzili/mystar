@@ -11,6 +11,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { Menu as MenuIcon } from "lucide-react";
 import { useUser, UserButton, SignInButton } from "@clerk/clerk-react";
@@ -23,6 +24,7 @@ export default function Root() {
   const bgColor = useColorModeValue("gray.50", "gray.900");
   const textColor = useColorModeValue("gray.800", "white");
   const headerBg = useColorModeValue("white", "gray.800");
+  const userButtonSize = useBreakpointValue({ base: "sm", md: "md" });
 
   React.useEffect(() => {
     const currentPath = window.location.pathname;
@@ -49,7 +51,7 @@ export default function Root() {
         align="center"
         justify="space-between"
         wrap="wrap"
-        padding="1.5rem"
+        padding={{ base: "1rem", md: "1.5rem" }}
         bg={headerBg}
         boxShadow="sm"
       >
@@ -57,14 +59,14 @@ export default function Root() {
           <Image
             src="/logo.png"
             alt="Mystar"
-            width={8}
-            height={8}
+            width={{ base: 6, md: 8 }}
+            height={{ base: 6, md: 8 }}
             onClick={handleLogoClick}
           />
           <Box
             as="span"
             ml={2}
-            fontSize="2xl"
+            fontSize={{ base: "xl", md: "2xl" }}
             fontWeight="bold"
             color={useColorModeValue("purple.500", "purple.300")}
             onClick={handleLogoClick}
@@ -92,7 +94,7 @@ export default function Root() {
               </Link>
               <ColorModeToggle />
               <Box ml={4}>
-                <UserButton />
+                <UserButton userProfileMode="navigation" afterSignOutUrl="/" />
               </Box>
             </Flex>
             <Box display={{ base: "block", md: "none" }}>
@@ -102,17 +104,33 @@ export default function Root() {
                   icon={<MenuIcon />}
                   variant="outline"
                   aria-label="Options"
+                  size="sm"
                 />
-                <MenuList>
-                  <MenuItem onClick={handleNewReading}>Start Reading</MenuItem>
-                  <MenuItem as={Link} to="/history">
-                    History
+                <MenuList minWidth="auto" width="auto" maxWidth="150px">
+                  <MenuItem padding={0}>
+                    <Box ml={2}>
+                      <UserButton 
+                        userProfileMode="navigation" 
+                        afterSignOutUrl="/" 
+                        appearance={{
+                          elements: {
+                            avatarBox: {
+                              width: userButtonSize === "sm" ? "24px" : "32px",
+                              height: userButtonSize === "sm" ? "24px" : "32px",
+                            }
+                          }
+                        }}
+                      />
+                    </Box>
                   </MenuItem>
-                  <MenuItem>
+                  <MenuItem padding={0}>
                     <ColorModeToggle asMenuItem />
                   </MenuItem>
-                  <MenuItem>
-                    <UserButton />
+                  <MenuItem as={Link} to="/history" fontSize="xs" py={2} px={3}>
+                    History
+                  </MenuItem>
+                  <MenuItem onClick={handleNewReading} fontSize="xs" py={2} px={3}>
+                    Start Reading
                   </MenuItem>
                 </MenuList>
               </Menu>

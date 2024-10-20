@@ -11,6 +11,7 @@ import {
   HStack,
   Container,
   Flex,
+  Stack,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SelectedCard, Prediction } from "../types/types";
@@ -90,12 +91,18 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
       <MotionContainer
         maxW={columns === 1 ? "container.sm" : "container.xl"}
         py={5}
+        px={3}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <VStack spacing={6} align="stretch">
-          <Flex justifyContent="space-between" alignItems="center" flexWrap="wrap">
+          <Stack
+            direction={["column", "row"]}
+            justifyContent="space-between"
+            alignItems={["flex-start", "center"]}
+            spacing={4}
+          >
             <Heading as="h2" size="lg" color={headingColor}>
               {isOwner ? "Your Tarot Prediction" : "Your Friend's Tarot Prediction"}
             </Heading>
@@ -104,11 +111,12 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
                 leftIcon={<ShareIcon />}
                 colorScheme="purple"
                 onClick={handleShare}
+                width={["100%", "auto"]}
               >
                 Share
               </Button>
             )}
-          </Flex>
+          </Stack>
 
           <MotionBox
             bg={predictionBgColor}
@@ -132,7 +140,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
               <MotionBox
                 key={tf.title}
                 bg={predictionBgColor}
-                p={6}
+                p={4}
                 borderRadius="lg"
                 boxShadow="md"
                 initial={{ opacity: 0, y: 20 }}
@@ -142,17 +150,17 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
                 flexDirection="column"
                 height="100%"
               >
-                <VStack spacing={4} align="stretch" flex={1}>
+                <VStack spacing={3} align="stretch" flex={1}>
                   <HStack justify="center">
-                    <Box as={tf.icon} size={24} color={headingColor} />
-                    <Text fontSize="xl" fontWeight="bold" color={headingColor}>
+                    <Box as={tf.icon} size={20} color={headingColor} />
+                    <Text fontSize="lg" fontWeight="bold" color={headingColor}>
                       {tf.title}
                     </Text>
                   </HStack>
                   <Box
                     bg={cardBgColor}
                     borderRadius="lg"
-                    p={4}
+                    p={3}
                     textAlign="center"
                     boxShadow="md"
                     border="1px solid"
@@ -163,7 +171,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
                     <Image
                       src={tarotCardImages[cards[index].name]}
                       alt={cards[index].name}
-                      height="200px"
+                      height={["150px", "200px"]}
                       objectFit="contain"
                       transform={
                         cards[index].isReversed ? "rotate(180deg)" : "none"
@@ -196,7 +204,8 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
                     size="sm"
                     onClick={() => handleGenerateQuestion(tf.timeFrame)}
                     isLoading={chatIsGeneratingQuestion}
-                    mt={4}
+                    mt={3}
+                    width="100%"
                   >
                     Discuss {tf.title}
                   </Button>

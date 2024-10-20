@@ -19,6 +19,15 @@ import {
   IconButton,
   InputGroup,
   InputRightElement,
+  Select,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from "@chakra-ui/react";
 import {
   Sparkles,
@@ -113,6 +122,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
   const controls = useAnimation();
   const motionBoxHoverBg = useColorModeValue("purple.100", "gray.600");
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
   useEffect(() => {
     controls.start({
       opacity: 1,
@@ -177,7 +189,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
   );
 
   return (
-    <Container maxW="container.xl" centerContent py={10}>
+    <Container maxW="container.xl" centerContent py={isMobile ? 5 : 10}>
       <MotionBox
         as="form"
         onSubmit={handleSubmit}
@@ -187,11 +199,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <VStack spacing={8} align="stretch">
+        <VStack spacing={isMobile ? 4 : 8} align="stretch">
           <Flex alignItems="center" justifyContent="center">
-            <Icon as={Sparkles} w={8} h={8} color={iconColor} mr={3} />
+            <Icon as={Sparkles} w={isMobile ? 6 : 8} h={isMobile ? 6 : 8} color={iconColor} mr={2} />
             <MotionText
-              fontSize={{ base: "2xl", md: "3xl" }}
+              fontSize={{ base: "xl", md: "3xl" }}
               fontWeight="bold"
               color={labelColor}
               textAlign="center"
@@ -211,7 +223,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
             </MotionText>
           </Flex>
           <FormControl>
-            <InputGroup size="lg">
+            <InputGroup size={isMobile ? "md" : "lg"}>
               <Input
                 id="question"
                 value={question}
@@ -226,34 +238,45 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
                   borderColor: "purple.500",
                   boxShadow: "0 0 0 1px purple.500",
                 }}
-                fontSize="xl"
-                height="60px"
+                fontSize={isMobile ? "lg" : "xl"}
+                height={isMobile ? "50px" : "60px"}
                 pr="4.5rem"
               />
-              <InputRightElement width="4.5rem" height="60px">
-                <Tooltip
-                  label={goodQuestionGuidelines}
-                  placement="top-end"
-                  hasArrow
-                >
+              <InputRightElement width="4.5rem" height={isMobile ? "50px" : "60px"}>
+                {isMobile ? (
                   <IconButton
                     aria-label="How to ask a good question"
                     icon={<HelpCircle />}
                     size="sm"
                     colorScheme="purple"
                     variant="ghost"
+                    onClick={onOpen}
                   />
-                </Tooltip>
+                ) : (
+                  <Tooltip
+                    label={goodQuestionGuidelines}
+                    placement="top-end"
+                    hasArrow
+                  >
+                    <IconButton
+                      aria-label="How to ask a good question"
+                      icon={<HelpCircle />}
+                      size="sm"
+                      colorScheme="purple"
+                      variant="ghost"
+                    />
+                  </Tooltip>
+                )}
               </InputRightElement>
             </InputGroup>
           </FormControl>
           <Button
             type="submit"
             colorScheme="purple"
-            size="lg"
-            height="60px"
+            size={isMobile ? "md" : "lg"}
+            height={isMobile ? "50px" : "60px"}
             width="full"
-            fontSize="xl"
+            fontSize={isMobile ? "lg" : "xl"}
             _hover={{ transform: "translateY(-2px)", boxShadow: "lg" }}
             transition="all 0.2s"
             leftIcon={<Icon as={Sparkles} />}
@@ -262,33 +285,47 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
           </Button>
           <Box>
             <Text
-              fontSize={{ base: "lg", md: "xl" }}
+              fontSize={{ base: "md", md: "xl" }}
               fontWeight="medium"
-              mb={4}
+              mb={isMobile ? 2 : 4}
               color={labelColor}
               textAlign="center"
             >
               Select a theme for example questions:
             </Text>
-            <SimpleGrid columns={{ base: 2, md: 3 }} spacing={4}>
-              {themes.map((theme) => (
-                <Button
-                  key={theme.name}
-                  onClick={() => setSelectedTheme(theme.name)}
-                  bg={selectedTheme === theme.name ? themeBg : "transparent"}
-                  _hover={{ bg: themeBg }}
-                  leftIcon={<Text fontSize="2xl">{theme.emoji}</Text>}
-                >
-                  {theme.name}
-                </Button>
-              ))}
-            </SimpleGrid>
+            {isMobile ? (
+              <Select
+                placeholder="Choose a theme"
+                onChange={(e) => setSelectedTheme(e.target.value)}
+                value={selectedTheme}
+              >
+                {themes.map((theme) => (
+                  <option key={theme.name} value={theme.name}>
+                    {theme.emoji} {theme.name}
+                  </option>
+                ))}
+              </Select>
+            ) : (
+              <SimpleGrid columns={{ base: 2, md: 3 }} spacing={4}>
+                {themes.map((theme) => (
+                  <Button
+                    key={theme.name}
+                    onClick={() => setSelectedTheme(theme.name)}
+                    bg={selectedTheme === theme.name ? themeBg : "transparent"}
+                    _hover={{ bg: themeBg }}
+                    leftIcon={<Text fontSize="2xl">{theme.emoji}</Text>}
+                  >
+                    {theme.name}
+                  </Button>
+                ))}
+              </SimpleGrid>
+            )}
           </Box>
           {selectedTheme && (
             <Box>
-              <Flex justifyContent="space-between" alignItems="center" mb={4}>
+              <Flex justifyContent="space-between" alignItems="center" mb={isMobile ? 2 : 4}>
                 <Text
-                  fontSize={{ base: "lg", md: "xl" }}
+                  fontSize={{ base: "md", md: "xl" }}
                   fontWeight="medium"
                   color={labelColor}
                 >
@@ -302,12 +339,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
                   colorScheme="purple"
                 />
               </Flex>
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+              <SimpleGrid columns={1} spacing={isMobile ? 2 : 4}>
                 {displayedQuestions.map((q, index) => (
                   <MotionBox
                     key={index}
                     bg={exampleBg}
-                    p={4}
+                    p={3}
                     borderRadius="md"
                     cursor="pointer"
                     onClick={() => setQuestion(q)}
@@ -315,7 +352,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Text fontSize={{ base: "md", md: "lg" }}>{q}</Text>
+                    <Text fontSize={{ base: "sm", md: "lg" }}>{q}</Text>
                   </MotionBox>
                 ))}
               </SimpleGrid>
@@ -323,6 +360,23 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
           )}
         </VStack>
       </MotionBox>
+
+      {/* Modal for mobile devices */}
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>How to Ask a Good Question</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {goodQuestionGuidelines}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="purple" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Container>
   );
 };

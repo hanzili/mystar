@@ -10,6 +10,7 @@ export default function Login() {
   const headingColor = useColorModeValue('purple.600', 'purple.300')
   const buttonBgColor = useColorModeValue('purple.500', 'purple.400')
   const buttonHoverBgColor = useColorModeValue('purple.600', 'purple.500')
+  const imageBgColor = useColorModeValue('purple.50', 'gray.900')
 
   const handleBeginJourney = () => {
     if (isSignedIn) {
@@ -28,26 +29,29 @@ export default function Login() {
             </Heading>
           </Flex>
           <Heading as="h2" size={{ base: "lg", md: "xl" }} color={textColor} textAlign={{ base: 'center', md: 'left' }} width="100%">
-            Unlock the Secrets of Your Destiny
+            Discover Your Path with Modern Tarot
           </Heading>
           <Text fontSize={{ base: "md", md: "xl" }} color={textColor} textAlign={{ base: 'center', md: 'left' }}>
-            Embark on a mystical journey with our AI-powered Tarot readings. Gain insights into your past, present, and future with the ancient wisdom of Tarot cards, enhanced by cutting-edge artificial intelligence.
+            Explore the mysteries of your past, present, and future with our AI-enhanced Tarot readings. Gain valuable insights and navigate life's challenges with the perfect blend of ancient wisdom and cutting-edge technology.
+          </Text>
+          <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="bold" color={headingColor} textAlign={{ base: 'center', md: 'left' }} width="100%">
+            100% Free - No Hidden Costs
           </Text>
           <Stack direction={{ base: 'column', md: 'row' }} spacing={4} width="100%">
             <VStack align={{ base: 'center', md: 'flex-start' }} spacing={4} flex="1">
               <Text fontSize={{ base: "md", md: "lg" }} color={textColor}>
-                ✨ Personalized Tarot readings
+                ✨ Personalized Tarot insights
               </Text>
               <Text fontSize={{ base: "md", md: "lg" }} color={textColor}>
-                💬 Chat with our AI Astrologer
+                💬 Interact with our AI Astrologer
               </Text>
             </VStack>
             <VStack align={{ base: 'center', md: 'flex-start' }} spacing={4} flex="1">
               <Text fontSize={{ base: "md", md: "lg" }} color={textColor}>
-                📜 Track your spiritual journey
+                📊 Track your personal growth
               </Text>
               <Text fontSize={{ base: "md", md: "lg" }} color={textColor}>
-                🌟 Customized Tarot deck
+                🎨 Unique, customizable Tarot deck
               </Text>
             </VStack>
           </Stack>
@@ -61,7 +65,7 @@ export default function Login() {
                 onClick={handleBeginJourney}
                 width={{ base: "full", md: "auto" }}
               >
-                Start Your Free Reading
+                Begin Your Free Tarot Journey
               </Button>
             ) : (
               <SignInButton mode="modal">
@@ -72,26 +76,31 @@ export default function Login() {
                   _hover={{ bg: buttonHoverBgColor }}
                   width={{ base: "full", md: "auto" }}
                 >
-                  Try a Free Reading
+                  Get Your Free Reading Now
                 </Button>
               </SignInButton>
             )}
           </Box>
         </VStack>
       </Box>
-      <Box flex="1" p={4} display={{ base: 'none', lg: 'flex' }} alignItems="center" justifyContent="center">
-        <Image
-          src="/deck.png"
-          alt="deck"
-          objectFit="contain"
-          borderRadius="lg"
-          boxShadow="2xl"
-          maxWidth="80%"
-          maxHeight="80%"
-          width="auto"
-          height="auto"
+      
+      <Flex
+        flex="1"
+        bg={imageBgColor}
+        justifyContent="center"
+        alignItems="center"
+        display={{ base: 'none', lg: 'flex' }}
+      >
+        <Box
+          width="450px"
+          height="450px"
+          backgroundImage="url('/cat_crystall.webp')"
+          backgroundSize="cover"
+          backgroundPosition="center"
+          borderRadius="full"
+          boxShadow="lg"
         />
-      </Box>
+      </Flex>
     </Flex>
   )
 }

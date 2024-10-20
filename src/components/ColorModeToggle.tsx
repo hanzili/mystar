@@ -1,5 +1,5 @@
 import React from "react";
-import { IconButton, useColorMode, Icon, Box } from "@chakra-ui/react";
+import { IconButton, useColorMode, Icon, Box, useBreakpointValue } from "@chakra-ui/react";
 import { Sun, Moon } from "lucide-react";
 
 interface ColorModeToggleProps {
@@ -8,8 +8,9 @@ interface ColorModeToggleProps {
 
 const ColorModeToggle: React.FC<ColorModeToggleProps> = ({ asMenuItem = false }) => {
   const { colorMode, toggleColorMode } = useColorMode();
+  const iconSize = useBreakpointValue({ base: 16, md: 20 });
 
-  const icon = colorMode === "light" ? <Moon size={20} /> : <Sun size={20} />;
+  const icon = colorMode === "light" ? <Moon size={iconSize} /> : <Sun size={iconSize} />;
 
   if (asMenuItem) {
     return (
@@ -22,8 +23,7 @@ const ColorModeToggle: React.FC<ColorModeToggleProps> = ({ asMenuItem = false })
         py={2}
         cursor="pointer"
       >
-        <Icon as={() => icon} mr={2} />
-        {colorMode === "light" ? "Dark Mode" : "Light Mode"}
+        <Icon as={() => icon} />
       </Box>
     );
   }

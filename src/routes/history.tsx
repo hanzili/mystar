@@ -1,6 +1,6 @@
 // src/routes/history.tsx
 import { useEffect, useState } from 'react';
-import { Box, Heading, VStack, Text, useColorModeValue } from '@chakra-ui/react';
+import { Box, Heading, Text, useColorModeValue, Spinner, Center } from '@chakra-ui/react';
 import { useUser } from '@clerk/clerk-react';
 import { getTarotReadings, getSupabaseUserId } from '../lib/supabase';
 import { TarotReading } from '../lib/supabase_types';
@@ -34,19 +34,36 @@ export default function History() {
   }, [user]);
 
   return (
-    <VStack spacing={8} align="stretch">
-      <Box bg={useColorModeValue('white', 'gray.700')} p={6} borderRadius="lg" boxShadow="md">
-        <Heading as="h2" size="xl" mb={6} color={useColorModeValue('purple.600', 'purple.300')} textAlign="center">
-          Your Past Readings
-        </Heading>
-        {isLoading ? (
-          <Text textAlign="center">Loading your past readings...</Text>
-        ) : pastReadings.length > 0 ? (
-          <PastReadingsList pastReadings={pastReadings} />
-        ) : (
-          <Text textAlign="center">You haven't had any readings yet. Start a new reading to see your history!</Text>
-        )}
-      </Box>
-    </VStack>
+    <Box 
+      p={{ base: 2, md: 6 }} 
+      bg={useColorModeValue('white', 'gray.700')} 
+      borderRadius={{ base: 0, md: "lg" }} 
+      boxShadow={{ base: "none", md: "md" }}
+    >
+      <Heading 
+        as="h2" 
+        size={{ base: "lg", md: "xl" }} 
+        mb={4} 
+        color={useColorModeValue('purple.600', 'purple.300')} 
+        textAlign="center"
+      >
+        Your Past Readings
+      </Heading>
+      {isLoading ? (
+        <Center p={8}>
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="purple.500"
+            size="xl"
+          />
+        </Center>
+      ) : pastReadings.length > 0 ? (
+        <PastReadingsList pastReadings={pastReadings} />
+      ) : (
+        <Text textAlign="center">You haven't had any readings yet. Start a new reading to see your history!</Text>
+      )}
+    </Box>
   );
 }
