@@ -1,9 +1,10 @@
 import { useTarotReading } from "../hooks/useTarotReading";
 import { Box, VStack } from "@chakra-ui/react";
-import QuestionForm from "../components/QuestionForm";
+// import QuestionForm from "../components/QuestionForm";
 import CardSelection from "../components/CardSelection";
 import LoadingAnimation from "../components/LoadingAnimation";
 import { useCommonColors } from "../utils/theme";
+import QuestionForm from "../components/QuestionForm/QuestionForm";
 
 export default function Prediction() {
   const {
