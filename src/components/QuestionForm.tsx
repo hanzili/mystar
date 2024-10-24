@@ -6,7 +6,6 @@ import {
   Input,
   VStack,
   Text,
-  useColorModeValue,
   Flex,
   Tooltip,
   Icon,
@@ -37,6 +36,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { motion, useAnimation } from "framer-motion";
+import { useCommonColors } from "../utils/theme";
 
 interface QuestionFormProps {
   onSubmit: (question: string) => void;
@@ -111,16 +111,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
   const [selectedTheme, setSelectedTheme] = useState("");
   const [displayedQuestions, setDisplayedQuestions] = useState<string[]>([]);
 
-  const borderColor = useColorModeValue("purple.200", "purple.500");
-  const labelColor = useColorModeValue("purple.600", "purple.300");
-  const inputBg = useColorModeValue("white", "gray.700");
-  const inputColor = useColorModeValue("gray.800", "white");
-  const exampleBg = useColorModeValue("purple.50", "gray.700");
-  const iconColor = useColorModeValue("purple.500", "purple.300");
-  const themeBg = useColorModeValue("purple.100", "gray.600");
+  const { text, accent, cardBg, border, hover } = useCommonColors();
 
   const controls = useAnimation();
-  const motionBoxHoverBg = useColorModeValue("purple.100", "gray.600");
+  const motionBoxHoverBg = hover;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -201,11 +195,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
       >
         <VStack spacing={isMobile ? 4 : 8} align="stretch">
           <Flex alignItems="center" justifyContent="center">
-            <Icon as={Sparkles} w={isMobile ? 6 : 8} h={isMobile ? 6 : 8} color={iconColor} mr={2} />
+            <Icon as={Sparkles} w={isMobile ? 6 : 8} h={isMobile ? 6 : 8} color={accent} mr={2} />
             <MotionText
               fontSize={{ base: "xl", md: "3xl" }}
               fontWeight="bold"
-              color={labelColor}
+              color={accent}
               textAlign="center"
               initial={{ opacity: 0 }}
               animate={controls}
@@ -229,14 +223,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder="Enter your question..."
-                bg={inputBg}
-                color={inputColor}
-                borderColor={borderColor}
+                bg={cardBg}
+                color={text}
+                borderColor={border}
                 borderWidth={2}
-                _hover={{ borderColor: "purple.400" }}
+                _hover={{ borderColor: accent }}
                 _focus={{
-                  borderColor: "purple.500",
-                  boxShadow: "0 0 0 1px purple.500",
+                  borderColor: accent,
+                  boxShadow: `0 0 0 1px ${accent}`,
                 }}
                 fontSize={isMobile ? "lg" : "xl"}
                 height={isMobile ? "50px" : "60px"}
@@ -288,7 +282,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
               fontSize={{ base: "md", md: "xl" }}
               fontWeight="medium"
               mb={isMobile ? 2 : 4}
-              color={labelColor}
+              color={accent}
               textAlign="center"
             >
               Select a theme for example questions:
@@ -311,8 +305,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
                   <Button
                     key={theme.name}
                     onClick={() => setSelectedTheme(theme.name)}
-                    bg={selectedTheme === theme.name ? themeBg : "transparent"}
-                    _hover={{ bg: themeBg }}
+                    bg={selectedTheme === theme.name ? cardBg : "transparent"}
+                    _hover={{ bg: hover }}
                     leftIcon={<Text fontSize="2xl">{theme.emoji}</Text>}
                   >
                     {theme.name}
@@ -327,7 +321,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
                 <Text
                   fontSize={{ base: "md", md: "xl" }}
                   fontWeight="medium"
-                  color={labelColor}
+                  color={accent}
                 >
                   Example questions for {selectedTheme}:
                 </Text>
@@ -343,7 +337,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
                 {displayedQuestions.map((q, index) => (
                   <MotionBox
                     key={index}
-                    bg={exampleBg}
+                    bg={cardBg}
                     p={3}
                     borderRadius="md"
                     cursor="pointer"
@@ -352,7 +346,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onSubmit }) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Text fontSize={{ base: "sm", md: "lg" }}>{q}</Text>
+                    <Text fontSize={{ base: "sm", md: "lg" }} color={text}>{q}</Text>
                   </MotionBox>
                 ))}
               </SimpleGrid>

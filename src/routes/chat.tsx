@@ -3,7 +3,6 @@ import {
   Flex,
   Input,
   Button,
-  useColorModeValue,
   Icon,
   useMediaQuery,
 } from "@chakra-ui/react";
@@ -15,6 +14,7 @@ import { ChatIcon, DragHandleIcon } from "@chakra-ui/icons";
 import { TimeFrame } from "../lib/supabase_types";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "@tanstack/react-router";
+import { useCommonColors } from "../utils/theme";
 
 export default function Chat() {
   const search = useSearch({ from: "/chat" }) as { predictionId: string; shareId?: string };
@@ -47,11 +47,7 @@ export default function Chat() {
   const chatRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
-  const bgColor = useColorModeValue("gray.50", "gray.900");
-  const chatBgColor = useColorModeValue("white", "gray.800");
-  const aiMessageBgColor = useColorModeValue("gray.100", "gray.700");
-  const userMessageBgColor = useColorModeValue("purple.100", "purple.700");
-  const messageTextColor = useColorModeValue("gray.800", "white");
+  const { bg, chatBg, aiMessageBg, userMessageBg, text } = useCommonColors();
 
   const [isLargerThan768] = useMediaQuery("(min-width: 768px)");
   const [availableWidth, setAvailableWidth] = useState(100);
@@ -107,7 +103,7 @@ export default function Chat() {
   };
 
   return (
-    <Flex minHeight="calc(100vh - 80px)" bg={bgColor} p={4} position="relative">
+    <Flex minHeight="calc(100vh - 80px)" bg={bg} p={4} position="relative">
       {/* CurrentPrediction */}
       <Box
         width={isLargerThan768 && isChatOpen ? `${100 - chatWidth}%` : "100%"}
@@ -183,7 +179,7 @@ export default function Chat() {
           top={0}
           width={isLargerThan768 ? (isChatOpen ? `${chatWidth}%` : "0%") : "100%"}
           height="100%"
-          bg={chatBgColor}
+          bg={chatBg}
           boxShadow="md"
           transition="width 0.3s ease-in-out"
           overflow="hidden"
@@ -221,7 +217,7 @@ export default function Chat() {
             <Box flex={1} overflowY="auto" mb={4}>
               {messages.map((message, index) => (
                 <Flex
-                  key={message.id}
+                  key={index}
                   direction="column"
                   alignItems={message.is_ai_response ? "flex-start" : "flex-end"}
                   mb={2}
@@ -229,10 +225,10 @@ export default function Chat() {
                   <Box
                     bg={
                       message.is_ai_response
-                        ? aiMessageBgColor
-                        : userMessageBgColor
+                        ? aiMessageBg
+                        : userMessageBg
                     }
-                    color={messageTextColor}
+                    color={text}
                     borderRadius="lg"
                     px={3}
                     py={2}

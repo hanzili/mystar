@@ -8,12 +8,12 @@ import {
   useBreakpointValue,
   chakra,
   Tooltip,
-  useColorModeValue,
   Container,
 } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { tarotCards, tarotCardImages } from '../utils/tarotCards';
 import { useCardSelection } from '../hooks/useCardSelections';
+import { useCommonColors } from '../utils/theme';
 
 const MotionBox = chakra(motion.div);
 
@@ -33,10 +33,7 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
     xl: { width: '80px', height: '120px' },
   });
 
-  const textColor = useColorModeValue('gray.700', 'gray.200');
-  const headingColor = useColorModeValue('purple.600', 'purple.300');
-  const cardBgColor = useColorModeValue('gray.100', 'gray.700');
-  const cardBorderColor = useColorModeValue('purple.300', 'purple.500');
+  const { text, accent, cardBg, border } = useCommonColors();
 
   const guidanceText = [
     'Trust your intuition as you select your cards.',
@@ -77,10 +74,10 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
 
   return (
     <Container maxW="container.xl" py={8}>
-      <Heading as="h2" size="xl" color={headingColor} textAlign="center" mb={4}>
+      <Heading as="h2" size="xl" color={accent} textAlign="center" mb={4}>
         {isRevealing ? 'Revealing Your Cards' : 'Select 3 Cards'}
       </Heading>
-      <Text fontSize="lg" fontWeight="medium" color={headingColor} textAlign="center" mb={4}>
+      <Text fontSize="lg" fontWeight="medium" color={accent} textAlign="center" mb={4}>
         {isRevealing
           ? 'Preparing your reading...'
           : `${selectedCards.length}/3 cards selected`}
@@ -95,7 +92,7 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
           textAlign="center"
           mb={8}
         >
-          <Text fontSize="md" color={textColor} fontStyle="italic">
+          <Text fontSize="md" color={text} fontStyle="italic">
             {guidanceText[Math.floor(Math.random() * guidanceText.length)]}
           </Text>
         </MotionBox>
@@ -133,9 +130,9 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
                 width="100%"
                 height="100%"
                 borderRadius="md"
-                bg={cardBgColor}
+                bg={cardBg}
                 border="2px solid"
-                borderColor={cardBorderColor}
+                borderColor={border}
                 style={{ backfaceVisibility: 'hidden' }}
                 display="flex"
                 alignItems="center"
@@ -162,9 +159,9 @@ const CardSelection: React.FC<CardSelectionProps> = ({ onSelect }) => {
                 width="100%"
                 height="100%"
                 borderRadius="md"
-                bg={cardBgColor}
+                bg={cardBg}
                 border="2px solid"
-                borderColor={cardBorderColor}
+                borderColor={border}
                 style={{
                   backfaceVisibility: 'hidden',
                   transform: 'rotateY(180deg)',

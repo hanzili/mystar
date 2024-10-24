@@ -5,7 +5,6 @@ import {
   Flex,
   Spacer,
   Button,
-  useColorModeValue,
   IconButton,
   Menu,
   MenuButton,
@@ -17,13 +16,12 @@ import { Menu as MenuIcon } from "lucide-react";
 import { useUser, UserButton, SignInButton } from "@clerk/clerk-react";
 import ColorModeToggle from "../components/ColorModeToggle";
 import { Image } from "@chakra-ui/react";
+import { useCommonColors } from "../utils/theme";
 
 export default function Root() {
   const { isSignedIn, isLoaded } = useUser();
   const navigate = useNavigate();
-  const bgColor = useColorModeValue("gray.50", "gray.900");
-  const textColor = useColorModeValue("gray.800", "white");
-  const headerBg = useColorModeValue("white", "gray.800");
+  const { bg, text, accent, cardBg } = useCommonColors();
   const userButtonSize = useBreakpointValue({ base: "sm", md: "md" });
 
   React.useEffect(() => {
@@ -45,14 +43,14 @@ export default function Root() {
   };
 
   return (
-    <Box minHeight="100vh" bg={bgColor} color={textColor}>
+    <Box minHeight="100vh" bg={bg} color={text}>
       <Flex
         as="header"
         align="center"
         justify="space-between"
         wrap="wrap"
         padding={{ base: "1rem", md: "1.5rem" }}
-        bg={headerBg}
+        bg={cardBg}
         boxShadow="sm"
       >
         <Flex align="center" mr={5} cursor="pointer">
@@ -68,7 +66,7 @@ export default function Root() {
             ml={2}
             fontSize={{ base: "xl", md: "2xl" }}
             fontWeight="bold"
-            color={useColorModeValue("purple.500", "purple.300")}
+            color={accent}
             onClick={handleLogoClick}
           >
             Mystar

@@ -4,7 +4,6 @@ import {
   Text,
   VStack,
   Image,
-  useColorModeValue,
   Fade,
   Flex,
 } from "@chakra-ui/react";
@@ -12,10 +11,11 @@ import { keyframes } from "@emotion/react";
 import { motion } from "framer-motion";
 import { SelectedCard } from "../types/types";
 import { tarotCardImages } from "../utils/tarotCards";
+import { useCommonColors } from "../utils/theme";
 
 const glowAnimation = keyframes`
   0% { box-shadow: 0 0 5px #f6e05e, 0 0 10px #f6e05e, 0 0 15px #f6e05e, 0 0 20px #f6e05e; }
-  50% { box-shadow: 0 0 10px #f6e05e, 0 0 20px #f6e05e, 0 0 30px #f6e05e, 0 0 40px #f6e05e; }
+   50% { box-shadow: 0 0 10px #f6e05e, 0 0 20px #f6e05e, 0 0 30px #f6e05e, 0 0 40px #f6e05e; }
   100% { box-shadow: 0 0 5px #f6e05e, 0 0 10px #f6e05e, 0 0 15px #f6e05e, 0 0 20px #f6e05e; }
 `;
 
@@ -27,9 +27,8 @@ const LoadingAnimation: React.FC<{
 }> = ({ question, selectedCards }) => {
   const [currentPhase, setCurrentPhase] = useState(0);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
-  const bgColor = useColorModeValue("rgba(0, 0, 0, 0.7)", "rgba(255, 255, 255, 0.1)");
-  const textColor = useColorModeValue("yellow.300", "yellow.200");
-
+  const { loadingOverlay, loadingText } = useCommonColors();
+  
   const phases = [
     "Take a deep breath and clear your mind...",
     "Focus on your question: '{question}'",
@@ -56,7 +55,7 @@ const LoadingAnimation: React.FC<{
       left="0"
       right="0"
       bottom="0"
-      bg={bgColor}
+      bg={loadingOverlay}
       alignItems="center"
       justifyContent="center"
       flexDirection="column"
@@ -67,7 +66,7 @@ const LoadingAnimation: React.FC<{
           <Text
             fontSize="2xl"
             fontWeight="bold"
-            color={textColor}
+            color={loadingText}
           >
             {phases[currentPhase].replace("{question}", question)}
           </Text>
@@ -114,7 +113,7 @@ const LoadingAnimation: React.FC<{
           </Box>
         </MotionBox>
 
-        <Text fontSize="lg" color={textColor} mt={4}>
+        <Text fontSize="lg" color={loadingText} mt={4}>
           {selectedCardIndex !== -1
             ? `Card ${selectedCardIndex + 1}: ${selectedCards[selectedCardIndex]?.name}`
             : "Click a card below to reveal its details"}

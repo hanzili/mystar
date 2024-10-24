@@ -1,8 +1,9 @@
 import { useTarotReading } from "../hooks/useTarotReading";
-import { Box, VStack, useColorModeValue } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import QuestionForm from "../components/QuestionForm";
 import CardSelection from "../components/CardSelection";
 import LoadingAnimation from "../components/LoadingAnimation";
+import { useCommonColors } from "../utils/theme";
 
 export default function Prediction() {
   const {
@@ -13,9 +14,11 @@ export default function Prediction() {
     handleCardSelection,
   } = useTarotReading();
 
+  const { cardBg } = useCommonColors();
+
   return (
     <VStack spacing={8} align="stretch">
-      <Box bg={useColorModeValue('white', 'gray.700')} p={6} borderRadius="lg" boxShadow="md">
+      <Box bg={cardBg} p={6} borderRadius="lg" boxShadow="md">
         {/* Step 1: Show Question Form */}
         {!question && <QuestionForm onSubmit={handleQuestionSubmit} />}
         

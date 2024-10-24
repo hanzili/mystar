@@ -3,7 +3,6 @@ import {
   Box,
   Text,
   VStack,
-  useColorModeValue,
   SimpleGrid,
   Heading,
   Button,
@@ -17,6 +16,7 @@ import { TarotReading } from "../lib/supabase_types";
 import { useNavigate } from "@tanstack/react-router";
 import { MessageCircle } from "lucide-react";
 import { tarotCardImages } from "../utils/tarotCards";
+import { useCommonColors } from "../utils/theme";
 
 const MotionBox = motion(Box);
 
@@ -26,13 +26,7 @@ interface PastReadingsListProps {
 
 const PastReadingsList: React.FC<PastReadingsListProps> = ({ pastReadings }) => {
   const navigate = useNavigate();
-  const cardBg = useColorModeValue("white", "gray.700");
-  const cardBorder = useColorModeValue("purple.200", "purple.500");
-  const textColor = useColorModeValue("gray.700", "gray.200");
-  const accentColor = useColorModeValue("purple.500", "purple.300");
-  const summaryBg = useColorModeValue("purple.50", "purple.900");
-  const badgeBg = useColorModeValue("purple.100", "purple.700");
-  const badgeColor = useColorModeValue("purple.800", "purple.100");
+  const { cardBg, border, text, accent, summaryBg, badgeBg, badgeText } = useCommonColors();
 
   const handleChatWithAstrologist = (predictionId: string) => {
     navigate({
@@ -82,7 +76,7 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({ pastReadings }) => 
                     top="-6px"
                     right="-6px"
                     bg={badgeBg}
-                    color={badgeColor}
+                    color={badgeText}
                     borderRadius="full"
                     fontSize="0.6em"
                     p={1}
@@ -111,9 +105,7 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({ pastReadings }) => 
           >
             <Box
               bg={cardBg}
-              borderRadius="lg"
-              borderWidth="1px"
-              borderColor={cardBorder}
+              borderColor={border}
               p={4}
               boxShadow="md"
               height="100%"
@@ -138,15 +130,15 @@ const PastReadingsList: React.FC<PastReadingsListProps> = ({ pastReadings }) => 
                     Explore
                   </Button>
                 </Flex>
-                <Heading as="h3" size="sm" color={accentColor}>
+                <Heading as="h3" size="sm" color={accent}>
                   {reading.question}
                 </Heading>
                 {renderCards(reading.cards)}
                 <Box bg={summaryBg} p={2} borderRadius="md">
-                  <Text fontSize="xs" fontWeight="bold" color={accentColor} mb={1}>
+                  <Text fontSize="xs" fontWeight="bold" color={accent} mb={1}>
                     Summary:
                   </Text>
-                  <Text fontSize="xs" color={textColor}>
+                  <Text fontSize="xs" color={text}>
                     {JSON.parse(reading.prediction).summary}
                   </Text>
                 </Box>

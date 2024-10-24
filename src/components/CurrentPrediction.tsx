@@ -4,13 +4,11 @@ import {
   Heading,
   Text,
   Image,
-  useColorModeValue,
   SimpleGrid,
   Button,
   VStack,
   HStack,
   Container,
-  Flex,
   Stack,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +16,7 @@ import { SelectedCard, Prediction } from "../types/types";
 import { tarotCardImages } from "../utils/tarotCards";
 import { Clock, Sun, Sunrise, ShareIcon } from "lucide-react";
 import { TimeFrame } from "../lib/supabase_types";
+import { useCommonColors } from "../utils/theme";
 
 interface CurrentPredictionProps {
   prediction: Prediction;
@@ -49,11 +48,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
   shareUrl,
   handleShare,
 }) => {
-  const headingColor = useColorModeValue("purple.600", "purple.300");
-  const textColor = useColorModeValue("gray.700", "gray.200");
-  const cardBgColor = useColorModeValue("white", "gray.700");
-  const cardBorderColor = useColorModeValue("purple.200", "purple.500");
-  const predictionBgColor = useColorModeValue("purple.50", "gray.800");
+  const { accent, text, cardBg, border, predictionBg } = useCommonColors();
 
   const timeFrames = [
     {
@@ -103,7 +98,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
             alignItems={["flex-start", "center"]}
             spacing={4}
           >
-            <Heading as="h2" size="lg" color={headingColor}>
+            <Heading as="h2" size="lg" color={accent}>
               {isOwner ? "Your Tarot Prediction" : "Your Friend's Tarot Prediction"}
             </Heading>
             {isOwner && (
@@ -119,7 +114,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
           </Stack>
 
           <MotionBox
-            bg={predictionBgColor}
+            bg={predictionBg}
             p={6}
             borderRadius="lg"
             boxShadow="md"
@@ -127,10 +122,10 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={2}>
+            <Text fontSize="xl" fontWeight="bold" color={accent} mb={2}>
               Question:
             </Text>
-            <Text fontSize="lg" color={textColor}>
+            <Text fontSize="lg" color={text}>
               {question}
             </Text>
           </MotionBox>
@@ -139,7 +134,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
             {timeFrames.map((tf, index) => (
               <MotionBox
                 key={tf.title}
-                bg={predictionBgColor}
+                bg={predictionBg}
                 p={4}
                 borderRadius="lg"
                 boxShadow="md"
@@ -152,19 +147,19 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
               >
                 <VStack spacing={3} align="stretch" flex={1}>
                   <HStack justify="center">
-                    <Box as={tf.icon} size={20} color={headingColor} />
-                    <Text fontSize="lg" fontWeight="bold" color={headingColor}>
+                    <Box as={tf.icon} size={20} color={accent} />
+                    <Text fontSize="lg" fontWeight="bold" color={accent}>
                       {tf.title}
                     </Text>
                   </HStack>
                   <Box
-                    bg={cardBgColor}
+                    bg={cardBg}
                     borderRadius="lg"
                     p={3}
                     textAlign="center"
                     boxShadow="md"
                     border="1px solid"
-                    borderColor={cardBorderColor}
+                    borderColor={border}
                     width="fit-content"
                     mx="auto"
                   >
@@ -181,17 +176,17 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
                       fontSize="sm"
                       fontWeight="semibold"
                       mt={2}
-                      color={headingColor}
+                      color={accent}
                     >
                       {cards[index].name}
                     </Text>
-                    <Text fontSize="xs" color={textColor} fontStyle="italic">
+                    <Text fontSize="xs" color={text} fontStyle="italic">
                       {cards[index].isReversed ? "(Reversed)" : "(Upright)"}
                     </Text>
                   </Box>
                   <Text
                     fontSize="sm"
-                    color={textColor}
+                    color={text}
                     lineHeight="tall"
                     flex={1}
                   >
@@ -215,7 +210,7 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
           </SimpleGrid>
 
           <MotionBox
-            bg={predictionBgColor}
+            bg={predictionBg}
             p={6}
             borderRadius="lg"
             boxShadow="md"
@@ -223,10 +218,10 @@ const CurrentPrediction: React.FC<CurrentPredictionProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <Text fontSize="xl" fontWeight="bold" color={headingColor} mb={4}>
+            <Text fontSize="xl" fontWeight="bold" color={accent} mb={4}>
               Result
             </Text>
-            <Text fontSize="md" color={textColor} lineHeight="tall">
+            <Text fontSize="md" color={text} lineHeight="tall">
               {prediction.summary}
             </Text>
           </MotionBox>
